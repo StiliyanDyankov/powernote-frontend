@@ -29,10 +29,13 @@ export const userSlice = createSlice({
         inputPassword: (state, action: PayloadAction<string>) => {
             state.password = action.payload;
         },
+        clearPassword: (state) => {
+            state.password = "";
+        },
     },
 });
 
-export const { inputEmail, inputPassword } = userSlice.actions;
+export const { inputEmail, inputPassword, clearPassword } = userSlice.actions;
 
 const persistedReducer = persistReducer(persistConfig, userSlice.reducer);
 export default persistedReducer;

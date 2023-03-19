@@ -7,18 +7,15 @@ import {
     OutlinedInput,
 } from "@mui/material";
 import { VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from "../../utils/store";
 import { inputPassword } from "../../utils/userSlice";
 
-
-const PasswordField = ({
-    passwordValue,
-    onPasswordChange,
-}: {
-    passwordValue: string,
-    onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+const PasswordField = () => {
     const dispatch = useDispatch();
+    const storePasswordValue = useSelector(
+        (state: RootState) => state.user.password
+    );
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -31,11 +28,17 @@ const PasswordField = ({
             <InputLabel htmlFor="password" color="secondary">Password</InputLabel>
             <OutlinedInput
                 id="password"
+                autoComplete="test"
                 type={showPassword ? "text" : "password"}
                 label="Password"
                 color="secondary"
-                value={passwordValue}
-                onChange={onPasswordChange}
+                value={storePasswordValue}
+                onChange={(
+                    e: React.ChangeEvent<HTMLInputElement>
+                ) => {
+                    dispatch(inputPassword(e.target.value));
+                }}
+
                 endAdornment={
                     <InputAdornment position="end">
                         <IconButton
