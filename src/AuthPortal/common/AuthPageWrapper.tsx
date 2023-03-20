@@ -9,11 +9,11 @@ const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => {
 
     return (
         // root
-        <div className="flex items-center justify-center w-screen h-screen bg-gray-50 font-quicksand">
+        <div className="flex items-center justify-center w-screen h-screen bg-l-workscreen-bg dark:bg-d-100-body-bg font-quicksand">
             {/* header */}
-            <div className="absolute top-0 flex flex-row items-center justify-between w-screen px-8 py-2 bg-blue-100 ">
+            <div className="absolute top-0 flex flex-row items-center justify-between w-screen px-8 py-2 bg-primary dark:bg-d-200-cards">
                 <Link to="/">
-                    <span className="text-4xl font-semibold text-gray-800">
+                    <span className="text-4xl font-semibold text-gray-800 dark:text-l-workscreen-bg">
                         KN
                     </span>
                 </Link>

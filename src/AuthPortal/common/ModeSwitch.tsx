@@ -17,18 +17,20 @@ const ModeSwitch = () => {
             }}
             sx={{
                 position: "relative",
+                padding: 1.4,
                 left: 12,
-                height: "3rem",
-                width: "4.3rem",
+                height: 50,
+                width: 68,
                 "& .MuiSwitch-track": {
                     width: "10rem",
                     borderRadius: "1.5rem",
                 },
                 "& .MuiSwitch-switchBase": {
-                    margin: 0.75,
+                    marginTop: 0.8,
+                    marginLeft: 0.7,
                     "& .MuiSwitch-thumb": {
-                        width: "1.2rem",
-                        height: "1.2rem",
+                        width: 19,
+                        height: 19,
                     },
                 },
                 "&:before, &:after": {
