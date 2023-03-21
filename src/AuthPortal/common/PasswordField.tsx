@@ -25,22 +25,6 @@ const PasswordField = ({
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
-
-    // const evalHelper = (
-    //     noLength: boolean,
-    //     noNumber: boolean,
-    //     noPasswordServer: boolean,
-    //     noSymbol: boolean,
-    //     noUppercase: boolean
-    // ) => {
-    //     if (noLength) return "No account with such email found";
-    //     if (noNumber) return "Invalid email";
-    //     return "";
-    // };
-
     return (
         <FormControl
             variant="outlined"
@@ -71,7 +55,9 @@ const PasswordField = ({
                     <InputAdornment position="end">
                         <IconButton
                             aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
+                            onClick={() => {
+                                setShowPassword(!showPassword);
+                            }}
                             edge="end"
                         >
                             {showPassword ? (
@@ -116,3 +102,51 @@ const PasswordField = ({
 };
 
 export default PasswordField;
+
+export const PasswordFieldPlain = ({
+    onRepeatPassInput,
+    noPassMatch,
+}: {
+    onRepeatPassInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    noPassMatch: boolean;
+}) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+        <FormControl variant="outlined" size="small" color="secondary" error={noPassMatch}>
+            <InputLabel htmlFor="password" color="secondary">
+                Repeat Password
+            </InputLabel>
+            <OutlinedInput
+                id="password"
+                autoComplete="test"
+                type={showPassword ? "text" : "password"}
+                label="Repeat Password"
+                color="secondary"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onRepeatPassInput(e);
+                }}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => {
+                                setShowPassword(!showPassword);
+                            }}
+                            edge="end"
+                        >
+                            {showPassword ? (
+                                <VisibilityOffOutlined />
+                            ) : (
+                                <VisibilityOutlined />
+                            )}
+                        </IconButton>
+                    </InputAdornment>
+                }
+            />
+            <FormHelperText>
+                {noPassMatch ? <div>- Passwords don't match</div> : ""}
+            </FormHelperText>
+        </FormControl>
+    );
+};

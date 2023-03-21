@@ -26,6 +26,9 @@ export const userSlice = createSlice({
         inputEmail: (state, action: PayloadAction<string>) => {
             state.email = action.payload;
         },
+        clearEmail: (state) => {
+            state.email = "";
+        },
         inputPassword: (state, action: PayloadAction<string>) => {
             state.password = action.payload;
         },
@@ -35,7 +38,7 @@ export const userSlice = createSlice({
     },
 });
 
-export const { inputEmail, inputPassword, clearPassword } = userSlice.actions;
+export const { inputEmail, inputPassword, clearPassword, clearEmail } = userSlice.actions;
 
 const persistedReducer = persistReducer(persistConfig, userSlice.reducer);
 export default persistedReducer;

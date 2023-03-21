@@ -17,7 +17,6 @@ const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => {
                         KN
                     </span>
                 </Link>
-                {storeTheme ? "dark" : "light"}
                 <ModeSwitch />
             </div>
             {children}
