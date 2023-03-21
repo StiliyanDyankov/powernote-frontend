@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useHref, useLinkClickHandler } from "react-router-dom";
+import {
+    redirect,
+    useHref,
+    useLinkClickHandler,
+    useNavigate,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PasswordField from "./common/PasswordField";
 import AuthPageWrapper from "./common/AuthPageWrapper";
@@ -8,6 +13,7 @@ import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
 import EmailField from "./common/EmailField";
+import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
 
 export interface EmailErrors {
     noEmailServer: boolean;
@@ -30,6 +36,8 @@ const LoginPage: React.FC = () => {
         (state: RootState) => state.user.password
     );
 
+    const navigate = useNavigate();
+
     const forgotURL = useHref("/forgottenPassword");
     const handleForgotLink = useLinkClickHandler("/forgottenPassword");
 
@@ -37,31 +45,33 @@ const LoginPage: React.FC = () => {
     const handleRegisterLink = useLinkClickHandler("/register");
 
     const appURL = useHref("/app");
-    const handleAppLink = useLinkClickHandler("/app");
 
-    const [emailErrors, setEmailErrors] = useState<EmailErrors>({
-        noEmailServer: false,
-        invalidEmailForm: false,
-    });
+    const [emailErrors, setEmailErrors] = useEmailErrors();
 
-    const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({
-        noPasswordServer: false,
-        noLength: false,
-        noNumber: false,
-        noSymbol: false,
-        noUppercase: false,
-    });
+    const [passwordErrors, setPasswordErrors] = usePasswordErrors();
 
     const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
 
-    const handleSubmit = async (
-        e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-    ) => {
+    const handleLogin = async () => {
         setWaitServerRes(true);
-        e.preventDefault();
+
+        // testing
+        setEmailErrors({
+            invalidEmailForm: true,
+            noEmailServer: true,
+        });
+        setPasswordErrors({
+            noLength: true,
+            noNumber: true,
+            noPasswordServer: true,
+            noSymbol: true,
+            noUppercase: true,
+        });
+
         // simulating fetching
         await new Promise((r) => setTimeout(r, 3000));
-        handleAppLink(e);
+
+        navigate("/app");
     };
 
     useEffect(() => {
@@ -80,8 +90,14 @@ const LoginPage: React.FC = () => {
                     {/* form-wrap */}
                     <form className="flex flex-col items-stretch gap-4 ">
                         {/* <form> */}
-                        <EmailField errors={emailErrors} />
-                        <PasswordField errors={passwordErrors} />
+                        <EmailField
+                            errors={emailErrors}
+                            onEnter={handleLogin}
+                        />
+                        <PasswordField
+                            errors={passwordErrors}
+                            onEnter={handleLogin}
+                        />
                         <LinkMUI
                             className="font-medium w-min whitespace-nowrap dark:font-semibold dark:text-d-700-text"
                             color="secondary"
@@ -109,7 +125,15 @@ const LoginPage: React.FC = () => {
                             fullWidth
                             color="secondary"
                             href={appURL}
-                            onClick={handleSubmit}
+                            onClick={(
+                                e: React.MouseEvent<
+                                    HTMLAnchorElement,
+                                    MouseEvent
+                                >
+                            ) => {
+                                e.preventDefault();
+                                handleLogin();
+                            }}
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",

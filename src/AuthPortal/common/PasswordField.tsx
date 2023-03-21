@@ -15,8 +15,10 @@ import { PasswordErrors } from "../Login";
 
 const PasswordField = ({
     errors: { noLength, noNumber, noPasswordServer, noSymbol, noUppercase },
+    onEnter,
 }: {
     errors: PasswordErrors;
+    onEnter: () => void;
 }) => {
     const dispatch = useDispatch();
     const storePasswordValue = useSelector(
@@ -48,6 +50,11 @@ const PasswordField = ({
                 label="Password"
                 color="secondary"
                 value={storePasswordValue}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter") {
+                        onEnter();
+                    } else return;
+                }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     dispatch(inputPassword(e.target.value));
                 }}
@@ -70,29 +77,41 @@ const PasswordField = ({
                 }
             />
             <FormHelperText>
-                {noPasswordServer ? <div>- Incorrect password</div> : ""}
+                {noPasswordServer ? (
+                    <span>
+                        - Incorrect password<br></br>
+                    </span>
+                ) : (
+                    ""
+                )}
                 {noLength ? (
-                    <div> - Password should be at least 8 characters</div>
+                    <span>
+                        - Password should be at least 8 characters<br></br>
+                    </span>
                 ) : (
                     ""
                 )}
                 {noNumber ? (
-                    <div> - Password should contain at least one number</div>
+                    <span>
+                        - Password should contain at least one number<br></br>
+                    </span>
                 ) : (
                     ""
                 )}
                 {noUppercase ? (
-                    <div>
+                    <span>
                         - Password should contain at least one uppercase letter
-                    </div>
+                        <br></br>
+                    </span>
                 ) : (
                     ""
                 )}
                 {noSymbol ? (
-                    <div>
+                    <span>
                         - Password should contain at least one symbol - ().@#
                         etc
-                    </div>
+                        <br></br>
+                    </span>
                 ) : (
                     ""
                 )}
@@ -106,14 +125,21 @@ export default PasswordField;
 export const PasswordFieldPlain = ({
     onRepeatPassInput,
     noPassMatch,
+    onEnter,
 }: {
     onRepeatPassInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
     noPassMatch: boolean;
+    onEnter: () => void;
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <FormControl variant="outlined" size="small" color="secondary" error={noPassMatch}>
+        <FormControl
+            variant="outlined"
+            size="small"
+            color="secondary"
+            error={noPassMatch}
+        >
             <InputLabel htmlFor="password" color="secondary">
                 Repeat Password
             </InputLabel>
@@ -123,6 +149,11 @@ export const PasswordFieldPlain = ({
                 type={showPassword ? "text" : "password"}
                 label="Repeat Password"
                 color="secondary"
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter") {
+                        onEnter();
+                    } else return;
+                }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     onRepeatPassInput(e);
                 }}
@@ -145,7 +176,13 @@ export const PasswordFieldPlain = ({
                 }
             />
             <FormHelperText>
-                {noPassMatch ? <div>- Passwords don't match</div> : ""}
+                {noPassMatch ? (
+                    <span>
+                        - Passwords don't match<br></br>
+                    </span>
+                ) : (
+                    ""
+                )}
             </FormHelperText>
         </FormControl>
     );

@@ -8,8 +8,10 @@ import { EmailErrors } from "./../Login";
 
 const EmailField = ({
     errors: { noEmailServer, invalidEmailForm },
+    onEnter,
 }: {
     errors: EmailErrors;
+    onEnter: () => void;
 }) => {
     const dispatch = useDispatch();
 
@@ -32,6 +34,11 @@ const EmailField = ({
                 size="small"
                 color="secondary"
                 value={storeEmailValue}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter") {
+                        onEnter();
+                    } else return;
+                }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     dispatch(inputEmail(e.target.value));
                 }}

@@ -1,7 +1,7 @@
 import AuthPageWrapper from "./common/AuthPageWrapper";
 import EmailField from "./common/EmailField";
 import { useState, useEffect } from "react";
-import { EmailErrors, PasswordErrors } from "./Login";
+// import { EmailErrors, PasswordErrors } from "./Login";
 import PasswordField, { PasswordFieldPlain } from "./common/PasswordField";
 import { Button, Link as LinkMUI } from "@mui/material";
 import { useHref } from "react-router-dom";
@@ -9,6 +9,8 @@ import { useLinkClickHandler } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
+import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
+// import { PasswordErrors } from "./Login";
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
@@ -22,18 +24,10 @@ const RegisterPage = () => {
 
     const [noPassMatch, setNoPassMatch] = useState<boolean>(false);
 
-    const [emailErrors, setEmailErrors] = useState<EmailErrors>({
-        noEmailServer: false,
-        invalidEmailForm: false,
-    });
+    const [emailErrors, setEmailErrors] = useEmailErrors();
 
-    const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({
-        noPasswordServer: false,
-        noLength: false,
-        noNumber: false,
-        noSymbol: false,
-        noUppercase: false,
-    });
+    const [passwordErrors, setPasswordErrors] =
+        usePasswordErrors(setNoPassMatch);
 
     const loginURL = useHref("/login");
     const handleLoginLink = useLinkClickHandler("/login");
@@ -42,34 +36,25 @@ const RegisterPage = () => {
         setRepeatPass(e.target.value);
     };
 
-    const handleRegister = async (
-        e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-    ) => {
+    const handleRegister = () => {
         setEmailErrors({
             invalidEmailForm: true,
             noEmailServer: true,
-        })
-        e.preventDefault();
+        });
+        setPasswordErrors({
+            noLength: true,
+            noNumber: true,
+            noPasswordServer: true,
+            noSymbol: true,
+            noUppercase: true,
+        });
+        setNoPassMatch(true);
     };
-
-    // clear email errors on input
-    useEffect(() => {
-        let intErrors = { ...emailErrors };
-        Object.keys(intErrors).forEach(
-            (k) => (intErrors[k as keyof EmailErrors] = false)
-        );
-        setEmailErrors(intErrors);
-    }, [storeEmailValue]);
-
-    // clear password errors on input
-    useEffect(() => {
-        console.log(1);
-    }, [storePasswordValue]);
 
     // clear repeat password error on input
     useEffect(() => {
-        console.log(1);
-    }, [storePasswordValue, repeatPass]);
+        setNoPassMatch(false);
+    }, [repeatPass]);
 
     useEffect(() => {
         return () => {
@@ -86,11 +71,18 @@ const RegisterPage = () => {
                     <h1 className="form-header">Register</h1>
                     {/* form-wrap */}
                     <form className="flex flex-col items-stretch gap-4 ">
-                        <EmailField errors={emailErrors} />
-                        <PasswordField errors={passwordErrors} />
+                        <EmailField
+                            errors={emailErrors}
+                            onEnter={handleRegister}
+                        />
+                        <PasswordField
+                            errors={passwordErrors}
+                            onEnter={handleRegister}
+                        />
                         <PasswordFieldPlain
                             onRepeatPassInput={handleRepeatPassInput}
                             noPassMatch={noPassMatch}
+                            onEnter={handleRegister}
                         />
                         <Button
                             className="flex flex-row "
@@ -101,7 +93,15 @@ const RegisterPage = () => {
                             fullWidth
                             color="secondary"
                             href={loginURL}
-                            onClick={handleRegister}
+                            onClick={(
+                                e: React.MouseEvent<
+                                    HTMLAnchorElement,
+                                    MouseEvent
+                                >
+                            ) => {
+                                e.preventDefault();
+                                handleRegister();
+                            }}
                             sx={{
                                 display: "flex",
                                 flexDirection: "row",
