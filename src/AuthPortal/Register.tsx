@@ -29,8 +29,14 @@ const RegisterPage = () => {
     const [passwordErrors, setPasswordErrors] =
         usePasswordErrors(setNoPassMatch);
 
+    const [controlledShowPassword, setControlledShowPassword] = useState<boolean>(false);
+
     const loginURL = useHref("/login");
     const handleLoginLink = useLinkClickHandler("/login");
+
+    const handleControlledShowPassword =() => {
+        setControlledShowPassword(!controlledShowPassword)
+    }
 
     const handleRepeatPassInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRepeatPass(e.target.value);
@@ -78,11 +84,15 @@ const RegisterPage = () => {
                         <PasswordField
                             errors={passwordErrors}
                             onEnter={handleRegister}
+                            controlledShowPass={controlledShowPassword}
+                            handleControlledShowPass={handleControlledShowPassword}
                         />
                         <PasswordFieldPlain
                             onRepeatPassInput={handleRepeatPassInput}
                             noPassMatch={noPassMatch}
                             onEnter={handleRegister}
+                            controlledShowPass={controlledShowPassword}
+                            handleControlledShowPass={handleControlledShowPassword}
                         />
                         <Button
                             className="flex flex-row "

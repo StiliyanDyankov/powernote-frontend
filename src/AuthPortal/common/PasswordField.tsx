@@ -16,9 +16,13 @@ import { PasswordErrors } from "../Login";
 const PasswordField = ({
     errors: { noLength, noNumber, noPasswordServer, noSymbol, noUppercase },
     onEnter,
+    controlledShowPass = undefined,
+    handleControlledShowPass = () => {},
 }: {
     errors: PasswordErrors;
     onEnter: () => void;
+    controlledShowPass?: boolean | undefined;
+    handleControlledShowPass?: () => void;
 }) => {
     const dispatch = useDispatch();
     const storePasswordValue = useSelector(
@@ -46,7 +50,7 @@ const PasswordField = ({
             <OutlinedInput
                 id="password"
                 autoComplete="test"
-                type={showPassword ? "text" : "password"}
+                type={showPassword || controlledShowPass ? "text" : "password"}
                 label="Password"
                 color="secondary"
                 value={storePasswordValue}
@@ -63,11 +67,12 @@ const PasswordField = ({
                         <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => {
-                                setShowPassword(!showPassword);
+                                if(typeof controlledShowPass === "undefined") setShowPassword(!showPassword);
+                                else handleControlledShowPass();
                             }}
                             edge="end"
                         >
-                            {showPassword ? (
+                            {showPassword || controlledShowPass ? (
                                 <VisibilityOffOutlined />
                             ) : (
                                 <VisibilityOutlined />
@@ -126,10 +131,14 @@ export const PasswordFieldPlain = ({
     onRepeatPassInput,
     noPassMatch,
     onEnter,
+    controlledShowPass = undefined,
+    handleControlledShowPass = () => {},
 }: {
     onRepeatPassInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
     noPassMatch: boolean;
     onEnter: () => void;
+    controlledShowPass?: boolean | undefined;
+    handleControlledShowPass?: () => void;
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -146,7 +155,7 @@ export const PasswordFieldPlain = ({
             <OutlinedInput
                 id="password"
                 autoComplete="test"
-                type={showPassword ? "text" : "password"}
+                type={showPassword || controlledShowPass ? "text" : "password"}
                 label="Repeat Password"
                 color="secondary"
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -162,11 +171,12 @@ export const PasswordFieldPlain = ({
                         <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => {
-                                setShowPassword(!showPassword);
+                                if(typeof controlledShowPass === "undefined") setShowPassword(!showPassword);
+                                else handleControlledShowPass();
                             }}
                             edge="end"
                         >
-                            {showPassword ? (
+                            {showPassword || controlledShowPass ? (
                                 <VisibilityOffOutlined />
                             ) : (
                                 <VisibilityOutlined />
