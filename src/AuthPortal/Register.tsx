@@ -9,12 +9,90 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
 import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
+import Joi from "joi";
+import { EmailErrors, PasswordErrors } from "./Login";
 
+const emailFormSchema = Joi.string().email({
+    tlds: { allow: false },
+});
 
+const passwordFormSchema = Joi.string()
+    // .pattern(new RegExp(".{8,}"), "short")
+    .pattern(new RegExp("^.{8,19}$"), "length")
+    .pattern(new RegExp("[0-9]"), "number")
+    .pattern(new RegExp("[a-z]"), "lowercase")
+    .pattern(new RegExp("[A-Z]"), "uppercase")
+    .pattern(new RegExp("[^a-zA-Z0-9s\n]"), "special");
 
+const checkEmailErrors = (email: string, errors: EmailErrors): EmailErrors => {
+    let intErrors = { ...errors };
+    Object.keys(intErrors).forEach(
+        (k) => (intErrors[k as keyof EmailErrors] = false)
+    );
+    const validationRes = emailFormSchema.validate(email);
+    if (typeof validationRes.error === "undefined") {
+        return intErrors;
+    } else {
+        intErrors.invalidEmailForm = true;
+        return intErrors;
+    }
+};
 
+const validateEmail = (errors: EmailErrors): boolean => {
+    for (const err in errors) {
+        if (Object.prototype.hasOwnProperty.call(errors, err)) {
+            if (errors[err as keyof EmailErrors]) return false;
+        }
+    }
+    return true;
+};
 
+const checkPasswordErrors = (
+    password: string,
+    errors: PasswordErrors
+): PasswordErrors => {
+    let intErrors = { ...errors };
+    Object.keys(intErrors).forEach(
+        (k) => (intErrors[k as keyof PasswordErrors] = false)
+    );
+    const validationRes = passwordFormSchema.validate(password, {
+        abortEarly: false,
+    });
+    // return validationRes;
+    if (typeof validationRes.error === "undefined") {
+        return intErrors;
+    } else if (validationRes.error.details[0].type === "string.empty") {
+        intErrors.noLength = true;
+    } else {
+        validationRes.error.details.forEach((d) => {
+            if ((d.context?.name as string) === "length") {
+                intErrors.noLength = true;
+            }
+            if ((d.context?.name as string) === "number") {
+                intErrors.noNumber = true;
+            }
+            if ((d.context?.name as string) === "lowercase") {
+                intErrors.noLowercase = true;
+            }
+            if ((d.context?.name as string) === "uppercase") {
+                intErrors.noUppercase = true;
+            }
+            if ((d.context?.name as string) === "special") {
+                intErrors.noSymbol = true;
+            }
+        });
+    }
+    return intErrors;
+};
 
+const validatePassword = (errors: PasswordErrors): boolean => {
+    for (const err in errors) {
+        if (Object.prototype.hasOwnProperty.call(errors, err)) {
+            if (errors[err as keyof PasswordErrors]) return false;
+        }
+    }
+    return true;
+};
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
@@ -33,35 +111,45 @@ const RegisterPage = () => {
     const [passwordErrors, setPasswordErrors] =
         usePasswordErrors(setNoPassMatch);
 
-    const [controlledShowPassword, setControlledShowPassword] = useState<boolean>(false);
+    const [controlledShowPassword, setControlledShowPassword] =
+        useState<boolean>(false);
 
     const loginURL = useHref("/login");
     const handleLoginLink = useLinkClickHandler("/login");
 
-    const handleControlledShowPassword =() => {
-        setControlledShowPassword(!controlledShowPassword)
-    }
+    const handleControlledShowPassword = () => {
+        setControlledShowPassword(!controlledShowPassword);
+    };
 
     const handleRepeatPassInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRepeatPass(e.target.value);
     };
 
     const handleRegister = () => {
+        const emailCheckedErrors = checkEmailErrors(
+            storeEmailValue,
+            emailErrors
+        );
+        setEmailErrors(emailCheckedErrors);
+        if (!validateEmail(emailErrors)) {
+            console.log("yes ve meil");
+            return;
+        }
 
-        setEmailErrors({
-            invalidEmailForm: true,
-            noEmailServer: true,
-        });
-        
-        setPasswordErrors({
-            noLength: true,
-            noNumber: true,
-            noPasswordServer: true,
-            noSymbol: true,
-            noUppercase: true,
-        });
+        const passwordCheckedErrors = checkPasswordErrors(
+            storePasswordValue,
+            passwordErrors
+        );
+        setPasswordErrors(passwordCheckedErrors);
+        if (validatePassword(passwordErrors)) {
+            console.log("yes ve parola");
+            return;
+        }
 
-        setNoPassMatch(true);
+        if (repeatPass !== storePasswordValue) {
+            setNoPassMatch(true);
+            return;
+        }
 
         // do some fetching
     };
@@ -94,14 +182,18 @@ const RegisterPage = () => {
                             errors={passwordErrors}
                             onEnter={handleRegister}
                             controlledShowPass={controlledShowPassword}
-                            handleControlledShowPass={handleControlledShowPassword}
+                            handleControlledShowPass={
+                                handleControlledShowPassword
+                            }
                         />
                         <PasswordFieldPlain
                             onRepeatPassInput={handleRepeatPassInput}
                             noPassMatch={noPassMatch}
                             onEnter={handleRegister}
                             controlledShowPass={controlledShowPassword}
-                            handleControlledShowPass={handleControlledShowPassword}
+                            handleControlledShowPass={
+                                handleControlledShowPassword
+                            }
                         />
                         <Button
                             className="flex flex-row "

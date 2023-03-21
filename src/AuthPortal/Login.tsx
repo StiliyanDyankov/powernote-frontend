@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import {
-    redirect,
     useHref,
     useLinkClickHandler,
     useNavigate,
@@ -24,6 +23,7 @@ export interface PasswordErrors {
     noPasswordServer: boolean;
     noLength: boolean;
     noUppercase: boolean;
+    noLowercase: boolean;
     noNumber: boolean;
     noSymbol: boolean;
 }
@@ -66,6 +66,7 @@ const LoginPage: React.FC = () => {
             noPasswordServer: true,
             noSymbol: true,
             noUppercase: true,
+            noLowercase: true,
         });
 
         // simulating fetching

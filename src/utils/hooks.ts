@@ -44,6 +44,7 @@ export const usePasswordErrors = (
         noNumber: false,
         noSymbol: false,
         noUppercase: false,
+        noLowercase: false,
     });
 
     // clear password and repeatPassword errors on input in password

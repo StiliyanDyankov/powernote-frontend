@@ -14,7 +14,7 @@ import { inputPassword } from "../../utils/userSlice";
 import { PasswordErrors } from "../Login";
 
 const PasswordField = ({
-    errors: { noLength, noNumber, noPasswordServer, noSymbol, noUppercase },
+    errors: { noLength, noNumber, noPasswordServer, noSymbol, noUppercase, noLowercase },
     onEnter,
     controlledShowPass = undefined,
     handleControlledShowPass = () => {},
@@ -92,7 +92,7 @@ const PasswordField = ({
                 )}
                 {noLength ? (
                     <span>
-                        - Password should be at least 8 characters <br />
+                        - Password should be between 8 and 20 characters long <br />
                     </span>
                 ) : (
                     ""
@@ -107,6 +107,14 @@ const PasswordField = ({
                 {noUppercase ? (
                     <span>
                         - Password should contain at least one uppercase letter
+                        <br />
+                    </span>
+                ) : (
+                    ""
+                )}
+                {noLowercase ? (
+                    <span>
+                        - Password should contain at least one lowercase letter
                         <br />
                     </span>
                 ) : (
