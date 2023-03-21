@@ -1,7 +1,6 @@
 import AuthPageWrapper from "./common/AuthPageWrapper";
 import EmailField from "./common/EmailField";
 import { useState, useEffect } from "react";
-// import { EmailErrors, PasswordErrors } from "./Login";
 import PasswordField, { PasswordFieldPlain } from "./common/PasswordField";
 import { Button, Link as LinkMUI } from "@mui/material";
 import { useHref } from "react-router-dom";
@@ -10,7 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
 import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
-// import { PasswordErrors } from "./Login";
+
+
+
+
+
+
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
@@ -43,10 +47,12 @@ const RegisterPage = () => {
     };
 
     const handleRegister = () => {
+
         setEmailErrors({
             invalidEmailForm: true,
             noEmailServer: true,
         });
+        
         setPasswordErrors({
             noLength: true,
             noNumber: true,
@@ -54,7 +60,10 @@ const RegisterPage = () => {
             noSymbol: true,
             noUppercase: true,
         });
+
         setNoPassMatch(true);
+
+        // do some fetching
     };
 
     // clear repeat password error on input

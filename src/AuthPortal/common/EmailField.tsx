@@ -43,7 +43,24 @@ const EmailField = ({
                     dispatch(inputEmail(e.target.value));
                 }}
                 error={noEmailServer || invalidEmailForm}
-                helperText={evalHelper(noEmailServer, invalidEmailForm)}
+                helperText={
+                    <React.Fragment>
+                        {noEmailServer ? (
+                            <span>
+                                - No account with such email exists <br />
+                            </span>
+                        ) : (
+                            ""
+                        )}
+                        {invalidEmailForm ? (
+                            <span>
+                                - Invalid email <br />
+                            </span>
+                        ) : (
+                            ""
+                        )}
+                    </React.Fragment>
+                }
             />
         </React.Fragment>
     );

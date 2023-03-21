@@ -67,7 +67,8 @@ const PasswordField = ({
                         <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => {
-                                if(typeof controlledShowPass === "undefined") setShowPassword(!showPassword);
+                                if (typeof controlledShowPass === "undefined")
+                                    setShowPassword(!showPassword);
                                 else handleControlledShowPass();
                             }}
                             edge="end"
@@ -84,21 +85,21 @@ const PasswordField = ({
             <FormHelperText>
                 {noPasswordServer ? (
                     <span>
-                        - Incorrect password<br></br>
+                        - Incorrect password <br />
                     </span>
                 ) : (
                     ""
                 )}
                 {noLength ? (
                     <span>
-                        - Password should be at least 8 characters<br></br>
+                        - Password should be at least 8 characters <br />
                     </span>
                 ) : (
                     ""
                 )}
                 {noNumber ? (
                     <span>
-                        - Password should contain at least one number<br></br>
+                        - Password should contain at least one number <br />
                     </span>
                 ) : (
                     ""
@@ -106,7 +107,7 @@ const PasswordField = ({
                 {noUppercase ? (
                     <span>
                         - Password should contain at least one uppercase letter
-                        <br></br>
+                        <br />
                     </span>
                 ) : (
                     ""
@@ -115,7 +116,7 @@ const PasswordField = ({
                     <span>
                         - Password should contain at least one symbol - ().@#
                         etc
-                        <br></br>
+                        <br />
                     </span>
                 ) : (
                     ""
@@ -153,7 +154,7 @@ export const PasswordFieldPlain = ({
                 Repeat Password
             </InputLabel>
             <OutlinedInput
-                id="password"
+                id="passwordPlain"
                 autoComplete="test"
                 type={showPassword || controlledShowPass ? "text" : "password"}
                 label="Repeat Password"
@@ -171,7 +172,8 @@ export const PasswordFieldPlain = ({
                         <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => {
-                                if(typeof controlledShowPass === "undefined") setShowPassword(!showPassword);
+                                if (typeof controlledShowPass === "undefined")
+                                    setShowPassword(!showPassword);
                                 else handleControlledShowPass();
                             }}
                             edge="end"
