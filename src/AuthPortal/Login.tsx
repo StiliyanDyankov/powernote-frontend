@@ -14,20 +14,6 @@ import { clearPassword } from "../utils/userSlice";
 import EmailField from "./common/EmailField";
 import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
 
-export interface EmailErrors {
-    noEmailServer: boolean;
-    invalidEmailForm: boolean;
-}
-
-export interface PasswordErrors {
-    noPasswordServer: boolean;
-    noLength: boolean;
-    noUppercase: boolean;
-    noLowercase: boolean;
-    noNumber: boolean;
-    noSymbol: boolean;
-}
-
 const LoginPage: React.FC = () => {
     const dispatch = useDispatch();
 

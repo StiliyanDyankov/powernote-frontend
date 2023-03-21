@@ -11,10 +11,79 @@ import { VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../utils/store";
 import { inputPassword } from "../../utils/userSlice";
-import { PasswordErrors } from "../Login";
+import Joi from "joi";
+
+export interface PasswordErrors {
+    noPasswordServer: boolean;
+    noLength: boolean;
+    noUppercase: boolean;
+    noLowercase: boolean;
+    noNumber: boolean;
+    noSymbol: boolean;
+}
+
+export const passwordFormSchema = Joi.string()
+    .pattern(new RegExp("^.{8,19}$"), "length")
+    .pattern(new RegExp("[0-9]"), "number")
+    .pattern(new RegExp("[a-z]"), "lowercase")
+    .pattern(new RegExp("[A-Z]"), "uppercase")
+    .pattern(new RegExp("[^a-zA-Z0-9s\n]"), "special");
+
+export const checkPasswordErrors = (
+    password: string,
+    errors: PasswordErrors
+): PasswordErrors => {
+    let intErrors = { ...errors };
+    Object.keys(intErrors).forEach(
+        (k) => (intErrors[k as keyof PasswordErrors] = false)
+    );
+    const validationRes = passwordFormSchema.validate(password, {
+        abortEarly: false,
+    });
+    if (typeof validationRes.error === "undefined") {
+        return intErrors;
+    } else if (validationRes.error.details[0].type === "string.empty") {
+        intErrors.noLength = true;
+    } else {
+        validationRes.error.details.forEach((d) => {
+            if ((d.context?.name as string) === "length") {
+                intErrors.noLength = true;
+            }
+            if ((d.context?.name as string) === "number") {
+                intErrors.noNumber = true;
+            }
+            if ((d.context?.name as string) === "lowercase") {
+                intErrors.noLowercase = true;
+            }
+            if ((d.context?.name as string) === "uppercase") {
+                intErrors.noUppercase = true;
+            }
+            if ((d.context?.name as string) === "special") {
+                intErrors.noSymbol = true;
+            }
+        });
+    }
+    return intErrors;
+};
+
+export const validatePassword = (errors: PasswordErrors): boolean => {
+    for (const err in errors) {
+        if (Object.prototype.hasOwnProperty.call(errors, err)) {
+            if (errors[err as keyof PasswordErrors]) return false;
+        }
+    }
+    return true;
+};
 
 const PasswordField = ({
-    errors: { noLength, noNumber, noPasswordServer, noSymbol, noUppercase, noLowercase },
+    errors: {
+        noLength,
+        noNumber,
+        noPasswordServer,
+        noSymbol,
+        noUppercase,
+        noLowercase,
+    },
     onEnter,
     controlledShowPass = undefined,
     handleControlledShowPass = () => {},
@@ -92,7 +161,8 @@ const PasswordField = ({
                 )}
                 {noLength ? (
                     <span>
-                        - Password should be between 8 and 20 characters long <br />
+                        - Password should be between 8 and 20 characters long{" "}
+                        <br />
                     </span>
                 ) : (
                     ""

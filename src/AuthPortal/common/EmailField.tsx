@@ -4,7 +4,42 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
 import TextField from "@mui/material/TextField";
 import { inputEmail } from "../../utils/userSlice";
-import { EmailErrors } from "./../Login";
+import  Joi  from 'joi';
+
+export interface EmailErrors {
+    noEmailServer: boolean;
+    invalidEmailForm: boolean;
+}
+
+export const emailFormSchema = Joi.string().email({
+    tlds: { allow: false },
+});
+
+
+export const checkEmailErrors = (email: string, errors: EmailErrors): EmailErrors => {
+    let intErrors = { ...errors };
+    Object.keys(intErrors).forEach(
+        (k) => (intErrors[k as keyof EmailErrors] = false)
+    );
+    const validationRes = emailFormSchema.validate(email);
+    if (typeof validationRes.error === "undefined") {
+        return intErrors;
+    } else {
+        intErrors.invalidEmailForm = true;
+        return intErrors;
+    }
+};
+
+export const validateEmail = (errors: EmailErrors): boolean => {
+    for (const err in errors) {
+        if (Object.prototype.hasOwnProperty.call(errors, err)) {
+            if (errors[err as keyof EmailErrors]) return false;
+        }
+    }
+    return true;
+};
+
+
 
 const EmailField = ({
     errors: { noEmailServer, invalidEmailForm },
