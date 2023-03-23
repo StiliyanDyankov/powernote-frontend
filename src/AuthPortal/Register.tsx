@@ -1,171 +1,48 @@
 import AuthPageWrapper from "./common/AuthPageWrapper";
-import EmailField, { checkEmailErrors, validateEmail } from "./common/EmailField";
-import { useState, useEffect } from "react";
-import PasswordField, { checkPasswordErrors, PasswordFieldPlain, validatePassword } from "./common/PasswordField";
-import { Button, Link as LinkMUI } from "@mui/material";
-import { useHref } from "react-router-dom";
-import { useLinkClickHandler } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../utils/store";
-import { clearPassword } from "../utils/userSlice";
-import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
+import { useDispatch } from "react-redux";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import RegisterSection from "./RegisterSection";
+import VerificationSection from "./VerificationSection";
+import { goNextStep, goPrevStep, resetSteps } from "../utils/registerSlice";
+
+const steps = ["Register", "Verify yourself"];
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
+    // const storeRegisterStep = useSelector(
+    //     (state: RootState) => state.register.currentStep
+    // );
+    const storeRegisterStep = 1
 
-    const storeEmailValue = useSelector((state: RootState) => state.user.email);
-    const storePasswordValue = useSelector(
-        (state: RootState) => state.user.password
-    );
-
-    const [repeatPass, setRepeatPass] = useState<string>("");
-
-    const [noPassMatch, setNoPassMatch] = useState<boolean>(false);
-
-    const [emailErrors, setEmailErrors] = useEmailErrors();
-
-    const [passwordErrors, setPasswordErrors] =
-        usePasswordErrors(setNoPassMatch);
-
-    const [controlledShowPassword, setControlledShowPassword] =
-        useState<boolean>(false);
-
-    const loginURL = useHref("/login");
-    const handleLoginLink = useLinkClickHandler("/login");
-
-    const handleControlledShowPassword = () => {
-        setControlledShowPassword(!controlledShowPassword);
-    };
-
-    const handleRepeatPassInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setRepeatPass(e.target.value);
-    };
-
-    const handleRegister = () => {
-        const emailCheckedErrors = checkEmailErrors(
-            storeEmailValue,
-            emailErrors
-        );
-        console.log(emailErrors);
-
-        setEmailErrors(emailCheckedErrors);
-        console.log(emailErrors);
-        if (!validateEmail(emailCheckedErrors)) {
-            console.log("yes ve meil");
-            return;
-        }
-
-        const passwordCheckedErrors = checkPasswordErrors(
-            storePasswordValue,
-            passwordErrors
-        );
-        setPasswordErrors(passwordCheckedErrors);
-        if (!validatePassword(passwordCheckedErrors)) {
-            console.log("yes ve parola");
-            return;
-        }
-
-        if (repeatPass !== storePasswordValue) {
-            setNoPassMatch(true);
-            return;
-        }
-
-        // do some fetching
-    };
-
-    // clear repeat password error on input
-    useEffect(() => {
-        setNoPassMatch(false);
-    }, [repeatPass]);
-
-    useEffect(() => {
-        return () => {
-            dispatch(clearPassword());
-        };
-    }, []);
-
+    const handleNext = () => {
+        dispatch(goNextStep());
+    }
+    const handlePrev = async () => {
+        dispatch(goPrevStep());
+  
+    }
     return (
         <AuthPageWrapper>
             {/* content-box */}
-            <div className="content-box">
-                {/* content-wrap */}
-                <div className="content-wrap">
-                    <h1 className="form-header">Register</h1>
-                    {/* form-wrap */}
-                    <form className="flex flex-col items-stretch gap-4 ">
-                        <EmailField
-                            errors={emailErrors}
-                            onEnter={handleRegister}
-                        />
-                        <PasswordField
-                            errors={passwordErrors}
-                            onEnter={handleRegister}
-                            controlledShowPass={controlledShowPassword}
-                            handleControlledShowPass={
-                                handleControlledShowPassword
-                            }
-                        />
-                        <PasswordFieldPlain
-                            onRepeatPassInput={handleRepeatPassInput}
-                            noPassMatch={noPassMatch}
-                            onEnter={handleRegister}
-                            controlledShowPass={controlledShowPassword}
-                            handleControlledShowPass={
-                                handleControlledShowPassword
-                            }
-                        />
-                        <Button
-                            className="flex flex-row "
-                            variant="contained"
-                            type="submit"
-                            disableElevation
-                            size="large"
-                            fullWidth
-                            color="secondary"
-                            href={loginURL}
-                            onClick={(
-                                e: React.MouseEvent<
-                                    HTMLAnchorElement,
-                                    MouseEvent
-                                >
-                            ) => {
-                                e.preventDefault();
-                                handleRegister();
-                            }}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <span className="font-bold text-gray-50 flex-grow text-center">
-                                Register
-                            </span>
-                        </Button>
-                        <div className="flex flex-row content-center justify-start gap-3">
-                            <div className="form-text">
-                                Already have an account?
-                            </div>
-                            <LinkMUI
-                                className="font-medium w-min whitespace-nowrap dark:font-semibold dark:text-d-700-text"
-                                color="secondary"
-                                underline="hover"
-                                href={loginURL}
-                                onClick={(
-                                    e: React.MouseEvent<
-                                        HTMLAnchorElement,
-                                        MouseEvent
-                                    >
-                                ) => {
-                                    e.preventDefault();
-                                    handleLoginLink(e);
-                                }}
-                            >
-                                Login
-                            </LinkMUI>
-                        </div>
-                    </form>
-                </div>
+            <div className="flex flex-col min-w-0 gap-2">
+                <Stepper activeStep={
+                    storeRegisterStep
+                } alternativeLabel>
+                    <Step key={steps[0]}>
+                        <StepLabel className="font-semibold">
+                            {steps[0]}
+                        </StepLabel>
+                    </Step>
+                    <Step key={steps[1]}>
+                        <StepLabel className="font-semibold">
+                            {steps[1]}
+                        </StepLabel>
+                    </Step>
+                </Stepper>
+                {/* {storeRegisterStep === 0 ? <RegisterSection onRegister={handleNext}/> : ""} */}
+                {storeRegisterStep === 1 ? <VerificationSection onVerify={handleNext} onBack={handlePrev}/> : ""}
             </div>
         </AuthPageWrapper>
     );
