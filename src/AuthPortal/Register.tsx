@@ -11,18 +11,21 @@ const steps = ["Register", "Verify yourself"];
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
-    // const storeRegisterStep = useSelector(
-    //     (state: RootState) => state.register.currentStep
-    // );
-    const storeRegisterStep = 1
+    const storeRegisterStep = useSelector(
+        (state: RootState) => state.register.currentStep
+    );
+    // const storeRegisterStep = 1
+
+    // dispatch(resetSteps());
 
     const handleNext = () => {
         dispatch(goNextStep());
     }
-    const handlePrev = async () => {
+    
+    const handlePrev = () => {
         dispatch(goPrevStep());
-  
     }
+
     return (
         <AuthPageWrapper>
             {/* content-box */}
@@ -41,8 +44,8 @@ const RegisterPage = () => {
                         </StepLabel>
                     </Step>
                 </Stepper>
-                {/* {storeRegisterStep === 0 ? <RegisterSection onRegister={handleNext}/> : ""} */}
-                {storeRegisterStep === 1 ? <VerificationSection onVerify={handleNext} onBack={handlePrev}/> : ""}
+                {storeRegisterStep === 0 ? <RegisterSection onRegister={handleNext}/> : ""}
+                {storeRegisterStep === 1 ? <VerificationSection onNext={handleNext} onBack={handlePrev}/> : ""}
             </div>
         </AuthPageWrapper>
     );

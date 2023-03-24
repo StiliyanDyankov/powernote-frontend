@@ -126,6 +126,7 @@ const PasswordField = ({
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === "Enter") {
                         onEnter();
+                        e.preventDefault();
                     } else return;
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,6 +241,7 @@ export const PasswordFieldPlain = ({
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === "Enter") {
                         onEnter();
+                        e.preventDefault();
                     } else return;
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,30 +1,39 @@
-import { Button, Input, OutlinedInput, setRef, TextField } from "@mui/material";
+import {
+    FormGroup,
+    FormHelperText,
+    OutlinedInput,
+} from "@mui/material";
 import React, { Ref, useEffect, useRef, useState } from "react";
 
 const PinItem = ({
     inputRef,
     value,
+    error,
     onInput,
     onFocus,
     onBackspace,
     onPaste,
+    onEnter,
 }: {
     inputRef: Ref<HTMLInputElement>;
     value: string;
+    error: boolean;
     onInput: (v: string) => void;
     onFocus: () => void;
     onBackspace: () => void;
     onPaste: (payload: React.ClipboardEvent<HTMLInputElement>) => void;
+    onEnter: () => void;
 }) => {
     return (
         <OutlinedInput
             value={value}
             inputRef={inputRef}
+            error={error}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                console.log("played")
                 let v = e.key;
-                console.log(v);
-                if (v === "Backspace") {
+                if (v === "Enter") {
+                    onEnter();
+                } else if (v === "Backspace") {
                     onInput("");
                     onBackspace();
                 } else if (!isNaN(parseInt(v))) {
@@ -47,7 +56,15 @@ const PinItem = ({
     );
 };
 
-const PinInput = () => {
+const PinInput = ({
+    error,
+    onPinStoring,
+    onEnter,
+}: {
+    error: boolean;
+    onPinStoring: (values: string[]) => void;
+    onEnter: () => void;
+}) => {
     const [values, setValues] = useState<string[]>(["", "", "", "", ""]);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const elements = useRef<HTMLInputElement[]>([]);
@@ -64,17 +81,19 @@ const PinInput = () => {
         }
     };
 
-    const handlePaste = (payload:React.ClipboardEvent<HTMLInputElement> ): void => {
-        let intData = payload.clipboardData.getData("text")
+    const handlePaste = (
+        payload: React.ClipboardEvent<HTMLInputElement>
+    ): void => {
+        let intData = payload.clipboardData.getData("text");
         intData.trim();
-        if(intData.length===5){
-            const arrData = intData.split("",5);
+        if (intData.length === 5) {
+            const arrData = intData.split("", 5);
             setValues(arrData);
+            setCurrentIndex(values.length - 1);
         } else return;
     };
 
     useEffect(() => {
-        console.log("index", currentIndex);
         if (
             currentIndex <= values.length - 2 &&
             currentIndex >= 0 &&
@@ -82,6 +101,10 @@ const PinInput = () => {
         ) {
             setCurrentIndex(currentIndex + 1);
         }
+    }, [values]);
+
+    useEffect(() => {
+        onPinStoring(values);
     }, [values]);
 
     useEffect(() => {
@@ -94,28 +117,41 @@ const PinInput = () => {
 
     return (
         <React.Fragment>
-            <div className="flex flex-row gap-3 px-4">
-                {values.map((v, i) => (
-                    <PinItem
-                        key={i}
-                        value={values[i]}
-                        onInput={(v: string) => {
-                            handleInput(v, i);
-                        }}
-                        onFocus={() => {
-                            setCurrentIndex(i);
-                        }}
-                        onBackspace={() => {
-                            handleBackspace(i);
-                        }}
-                        onPaste={handlePaste}
-                        inputRef={(el: HTMLInputElement) => {
-                            elements.current.push(el);
-                            elements.current[i] = el;
-                        }}
-                    />
-                ))}
-            </div>
+            <FormGroup>
+                <div className="flex flex-row gap-3 px-4">
+                    {values.map((v, i) => (
+                        <PinItem
+                            key={i}
+                            value={values[i]}
+                            error={error}
+                            onEnter={onEnter}
+                            onInput={(v: string) => {
+                                handleInput(v, i);
+                            }}
+                            onFocus={() => {
+                                setCurrentIndex(i);
+                            }}
+                            onBackspace={() => {
+                                handleBackspace(i);
+                            }}
+                            onPaste={handlePaste}
+                            inputRef={(el: HTMLInputElement) => {
+                                elements.current.push(el);
+                                elements.current[i] = el;
+                            }}
+                        />
+                    ))}
+                </div>
+                <div className="pl-3">
+                    {error ? (
+                        <FormHelperText error>
+                            - Invalid verification code
+                        </FormHelperText>
+                    ) : (
+                        ""
+                    )}
+                </div>
+            </FormGroup>
         </React.Fragment>
     );
 };

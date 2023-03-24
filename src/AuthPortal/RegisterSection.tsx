@@ -52,12 +52,9 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             storeEmailValue,
             emailErrors
         );
-        console.log(emailErrors);
 
         setEmailErrors(emailCheckedErrors);
-        console.log(emailErrors);
         if (!validateEmail(emailCheckedErrors)) {
-            console.log("yes ve meil");
             return;
         }
 
@@ -67,7 +64,6 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
         );
         setPasswordErrors(passwordCheckedErrors);
         if (!validatePassword(passwordCheckedErrors)) {
-            console.log("yes ve parola");
             return;
         }
 
@@ -115,7 +111,6 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                     <Button
                         className="flex flex-row "
                         variant="contained"
-                        type="submit"
                         disableElevation
                         size="large"
                         fullWidth
