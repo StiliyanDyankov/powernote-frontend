@@ -7,18 +7,21 @@ const PinItem = ({
     onInput,
     onFocus,
     onBackspace,
+    onPaste,
 }: {
     inputRef: Ref<HTMLInputElement>;
     value: string;
     onInput: (v: string) => void;
     onFocus: () => void;
     onBackspace: () => void;
+    onPaste: (payload: React.ClipboardEvent<HTMLInputElement>) => void;
 }) => {
     return (
         <OutlinedInput
             value={value}
             inputRef={inputRef}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                console.log("played")
                 let v = e.key;
                 console.log(v);
                 if (v === "Backspace") {
@@ -29,9 +32,9 @@ const PinItem = ({
                 } else return;
             }}
             onFocus={onFocus}
-            // onPaste={(e: React.ClipboardEvent<HTMLInputElement>) => {
-            //     e.curr
-            // }}
+            onPaste={(e: React.ClipboardEvent<HTMLInputElement>) => {
+                onPaste(e);
+            }}
             sx={{
                 p: 0,
                 "& .MuiInputBase-input": {
@@ -59,6 +62,15 @@ const PinInput = () => {
         if (currentIndex > 0) {
             setCurrentIndex(i - 1);
         }
+    };
+
+    const handlePaste = (payload:React.ClipboardEvent<HTMLInputElement> ): void => {
+        let intData = payload.clipboardData.getData("text")
+        intData.trim();
+        if(intData.length===5){
+            const arrData = intData.split("",5);
+            setValues(arrData);
+        } else return;
     };
 
     useEffect(() => {
@@ -96,6 +108,7 @@ const PinInput = () => {
                         onBackspace={() => {
                             handleBackspace(i);
                         }}
+                        onPaste={handlePaste}
                         inputRef={(el: HTMLInputElement) => {
                             elements.current.push(el);
                             elements.current[i] = el;
