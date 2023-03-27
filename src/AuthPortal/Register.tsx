@@ -6,17 +6,17 @@ import { Step, StepLabel, Stepper, Typography } from "@mui/material";
 import RegisterSection from "./RegisterSection";
 import VerificationSection from "./VerificationSection";
 import { goNextStep, goPrevStep, resetSteps } from "../utils/registerSlice";
-import { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CheckCircle } from "@mui/icons-material";
 
 const steps = ["Register", "Verify yourself"];
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
-    // const storeRegisterStep = useSelector(
-    //     (state: RootState) => state.register.currentStep
-    // );
-    const storeRegisterStep = 2;
+    const storeRegisterStep = useSelector(
+        (state: RootState) => state.register.currentStep
+    );
+    // const storeRegisterStep = 2;
 
     // dispatch(resetSteps());
 
@@ -62,41 +62,62 @@ const RegisterPage = () => {
         </AuthPageWrapper>
     );
 };
-
 export default RegisterPage;
+
+import { Transition } from "react-transition-group";
+import { gsap } from "gsap";
+import { useTransitionRef } from "../utils/hooks";
 
 const SuccessSection = () => {
     const dispatch = useDispatch();
 
+    const ref = useTransitionRef();
+
+
+    
     useEffect(() => {
         const wait = async () => {
             await new Promise((r) => setTimeout(r, 3000));
-            console.log("work");
             dispatch(resetSteps());
         };
         wait();
     }, []);
 
+    // const ref = useRef(null)
+    // useEffect(() => {
+    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
+    //     return () => {
+    //         console.log("runs");
+    //         // const wait = async () => {
+    //         //     await new Promise((r) => setTimeout(r, 500));
+    //         //     gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
+    //         // }
+    //         // wait();
+    //     };
+    // }, []);
+
     return (
-        <div className="content-box">
-            <div className="content-wrap">
-                <div className="form-header">
-                    <Typography variant="body1" color="green">
-                        <div className="flex flex-row items-center justify-center">
-                            <CheckCircle />
-                            <span className="pl-2 font-medium text-2xl">
-                                Success!
-                            </span>
-                        </div>
-                    </Typography>
+        <React.Fragment>
+            <div ref={ref} className="content-box">
+                <div className="content-wrap">
+                    <div className="form-header">
+                        <Typography variant="body1" color="green">
+                            <div className="flex flex-row items-center justify-center">
+                                <CheckCircle />
+                                <span className="pl-2 font-medium text-2xl">
+                                    Success!
+                                </span>
+                            </div>
+                        </Typography>
+                    </div>
+                    <p className="form-text text-lg text-left">
+                        You've successfully registered! <br /> Enjoy your stay!
+                    </p>
+                    <p className="form-text text-lg mt-3">
+                        You'll be redirected to the app shortly.
+                    </p>
                 </div>
-                <p className="form-text text-lg text-left">
-                    You've successfully registered! <br /> Enjoy your stay!
-                </p>
-                <p className="form-text text-lg mt-3">
-                    You'll be redirected to the app shortly.
-                </p>
             </div>
-        </div>
+        </React.Fragment>
     );
 };

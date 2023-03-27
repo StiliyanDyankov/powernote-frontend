@@ -46,7 +46,7 @@ const Providers = () => {
     const mode = useSelector((state: RootState) => state.theme.darkTheme);
     return (
         <ThemeProvider theme={mode ? darkTheme : lightTheme}>
-            <div className={mode ? "dark" : ""}>
+            <div className={`overflow-hidden ${mode ? "dark" : ""}`}>
                 <RouterProvider router={router} />
             </div>
         </ThemeProvider>

@@ -1,8 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import PinInput from "./common/PinInput";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Link as LinkMUI } from "@mui/material";
 import { setPin as setPinStore, resetSteps } from "../utils/registerSlice";
+import { useTransitionRef } from './../utils/hooks';
+import gsap from "gsap";
 
 const VerificationSection = ({
     onNext,
@@ -12,6 +14,8 @@ const VerificationSection = ({
     onBack: () => void;
 }) => {
     const dispatch = useDispatch();
+
+    const ref =  useTransitionRef();
 
     const [pin, setPin] = useState<string>("");
     const [pinError, setPinError] = useState<boolean>(false);
@@ -48,9 +52,24 @@ const VerificationSection = ({
         }
     }, [pin]);
 
+
+    // const ref = useRef(null)
+    // useEffect(() => {
+    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
+    //     return () => {
+    //         console.log("runs");
+
+    //         const wait = async () => {
+    //             await new Promise((r) => setTimeout(r, 500));
+    //             gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
+    //         }
+    //         wait();
+    //     };
+    // }, []);
+
     return (
         /* content-box */
-        <div className="content-box">
+        <div ref={ref} className="content-box">
             {/* content-wrap */}
             <div className="content-wrap">
                 <h1 className="form-header">Verify yourself</h1>
