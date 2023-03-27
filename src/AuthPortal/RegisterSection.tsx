@@ -14,13 +14,18 @@ import { useLinkClickHandler } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
-import { useEmailErrors, usePasswordErrors, useTransitionRef } from "../utils/hooks";
-import gsap from "gsap";
+import {
+    useEmailErrors,
+    usePasswordErrors,
+    useTransitionRef,
+} from "../utils/hooks";
 
 const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
     const dispatch = useDispatch();
 
-    const ref = useTransitionRef();
+    const transitionRef = useTransitionRef();
+
+    const ref = useRef(null)
 
     const storeEmailValue = useSelector((state: RootState) => state.user.email);
     const storePasswordValue = useSelector(
@@ -90,22 +95,8 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
         };
     }, []);
 
-    // const ref = useRef(null)
-    // useEffect(() => {
-    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
-    //     return () => {
-    //         console.log("runs");
-    //         const wait = async () => {
-    //             await new Promise((r) => setTimeout(r, 500));
-    //             gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
-    //         }
-    //         wait();
-    //     };
-    // }, [ref]);
-
-    
     return (
-        <div ref={ref} className="content-box">
+        <div ref={transitionRef} className="content-box">
             {/* content-wrap */}
             <div className="content-wrap">
                 <h1 className="form-header">Register</h1>

@@ -64,8 +64,6 @@ const RegisterPage = () => {
 };
 export default RegisterPage;
 
-import { Transition } from "react-transition-group";
-import { gsap } from "gsap";
 import { useTransitionRef } from "../utils/hooks";
 
 const SuccessSection = () => {
@@ -73,8 +71,6 @@ const SuccessSection = () => {
 
     const ref = useTransitionRef();
 
-
-    
     useEffect(() => {
         const wait = async () => {
             await new Promise((r) => setTimeout(r, 3000));
@@ -82,19 +78,6 @@ const SuccessSection = () => {
         };
         wait();
     }, []);
-
-    // const ref = useRef(null)
-    // useEffect(() => {
-    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
-    //     return () => {
-    //         console.log("runs");
-    //         // const wait = async () => {
-    //         //     await new Promise((r) => setTimeout(r, 500));
-    //         //     gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
-    //         // }
-    //         // wait();
-    //     };
-    // }, []);
 
     return (
         <React.Fragment>

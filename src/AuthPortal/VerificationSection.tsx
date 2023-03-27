@@ -1,10 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import PinInput from "./common/PinInput";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Link as LinkMUI } from "@mui/material";
-import { setPin as setPinStore, resetSteps } from "../utils/registerSlice";
-import { useTransitionRef } from './../utils/hooks';
-import gsap from "gsap";
+import { setPin as setPinStore } from "../utils/registerSlice";
+import { useTransitionRef } from "./../utils/hooks";
 
 const VerificationSection = ({
     onNext,
@@ -15,7 +14,7 @@ const VerificationSection = ({
 }) => {
     const dispatch = useDispatch();
 
-    const ref =  useTransitionRef();
+    const ref = useTransitionRef();
 
     const [pin, setPin] = useState<string>("");
     const [pinError, setPinError] = useState<boolean>(false);
@@ -28,13 +27,11 @@ const VerificationSection = ({
         } else return;
     };
 
-    const handleVerify = async () => {
+    const handleVerify = () => {
         if (pin.length === 5) {
-            dispatch(setPinStore(pin))
-            
+            dispatch(setPinStore(pin));
+
             onNext();
-            // await new Promise((r) => setTimeout(r, 3000));
-            // dispatch(resetSteps());
         } else setPinError(true);
     };
 
@@ -52,23 +49,7 @@ const VerificationSection = ({
         }
     }, [pin]);
 
-
-    // const ref = useRef(null)
-    // useEffect(() => {
-    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
-    //     return () => {
-    //         console.log("runs");
-
-    //         const wait = async () => {
-    //             await new Promise((r) => setTimeout(r, 500));
-    //             gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
-    //         }
-    //         wait();
-    //     };
-    // }, []);
-
     return (
-        /* content-box */
         <div ref={ref} className="content-box">
             {/* content-wrap */}
             <div className="content-wrap">
@@ -121,7 +102,7 @@ const VerificationSection = ({
                                 ) => {
                                     e.preventDefault();
                                     onBack();
-                                    console.log("runs")
+                                    console.log("runs");
                                 }}
                             >
                                 <span className="flex-grow font-bold text-center text-gray-50">

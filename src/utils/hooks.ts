@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { RootState } from "./store";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -64,27 +64,6 @@ export const usePasswordErrors = (
 
 export const useTransitionRef = () => {
     const ref = useRef(null);
-    // const mounted = useRef(false);
-
-    // const [mounted, setMounted] = useState<boolean>(false);
-
-    // useEffect(() => {
-    //     return () => {
-    //         console.log(mounted);
-    //         if (mounted) {
-    //             const wait = async () => {
-    //                 await new Promise((r) => setTimeout(r, 500));
-    //             };
-    //             wait();
-    //             gsap.fromTo(
-    //                 ref.current,
-    //                 { opacity: 1, x: "0%" },
-    //                 { opacity: 0, x: "-100%", duration: 0.5 }
-    //             );
-    //             setMounted(false);
-    //         }
-    //     };
-    // }, []);
 
     useEffect(() => {
         gsap.fromTo(
@@ -92,15 +71,7 @@ export const useTransitionRef = () => {
             { opacity: 0, x: "100%" },
             { opacity: 1, x: "0%", duration: 0.5 }
         );
-        // setMounted(true);
     }, []);
-    // useEffect(() => {
-    //     gsap.fromTo(ref.current, { opacity: 0, x:"100%" }, { opacity: 1, x:"0%", duration: 0.5 });
-    //     // const timeout = setTimeout(() => {
-    //     //   gsap.fromTo(ref.current, { opacity: 1, x:"0%" }, { opacity: 0, x:"-100%", duration: 0.5 });
-    //     //   // Unmount component here
-    //     // }, 500);
-    //     // return () => clearTimeout(timeout);
-    //   }, []);
+
     return ref;
 };

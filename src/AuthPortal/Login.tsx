@@ -12,7 +12,7 @@ import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/userSlice";
 import EmailField from "./common/EmailField";
-import { useEmailErrors, usePasswordErrors } from "./../utils/hooks";
+import { useEmailErrors, usePasswordErrors, useTransitionRef } from "./../utils/hooks";
 
 const LoginPage: React.FC = () => {
     const dispatch = useDispatch();
@@ -23,6 +23,8 @@ const LoginPage: React.FC = () => {
     );
 
     const navigate = useNavigate();
+
+    const ref = useTransitionRef()
 
     const forgotURL = useHref("/forgottenPassword");
     const handleForgotLink = useLinkClickHandler("/forgottenPassword");
@@ -70,7 +72,7 @@ const LoginPage: React.FC = () => {
     return (
         <AuthPageWrapper>
             {/* content-box */}
-            <div className="content-box">
+            <div ref={ref} className="content-box">
                 {/* content-wrap */}
                 <div className="content-wrap">
                     <h1 className="form-header">Login</h1>
