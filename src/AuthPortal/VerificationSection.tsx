@@ -29,8 +29,8 @@ const VerificationSection = ({
             dispatch(setPinStore(pin))
             
             onNext();
-            await new Promise((r) => setTimeout(r, 3000));
-            dispatch(resetSteps());
+            // await new Promise((r) => setTimeout(r, 3000));
+            // dispatch(resetSteps());
         } else setPinError(true);
     };
 
