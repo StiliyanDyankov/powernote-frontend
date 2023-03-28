@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import PinInput from "./common/PinInput";
 import React, { useEffect, useState } from "react";
-import { Button, Link as LinkMUI } from "@mui/material";
+import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { setPin as setPinStore } from "../utils/registerSlice";
 import { useTransitionRef } from "./../utils/hooks";
 
@@ -19,6 +19,8 @@ const VerificationSection = ({
     const [pin, setPin] = useState<string>("");
     const [pinError, setPinError] = useState<boolean>(false);
 
+    const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
+
     const handlePinStoring = (values: string[]) => {
         const pin = values.filter((val) => val !== "");
         if (pin.length > 0) {
@@ -27,9 +29,15 @@ const VerificationSection = ({
         } else return;
     };
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         if (pin.length === 5) {
             dispatch(setPinStore(pin));
+
+            setWaitServerRes(true);
+
+            await new Promise((r) => setTimeout(r, 3000));
+
+            setWaitServerRes(false);
 
             onNext();
         } else setPinError(true);
@@ -57,8 +65,8 @@ const VerificationSection = ({
                 {/* form-wrap */}
                 <form className="flex flex-col items-stretch gap-4 ">
                     <div className="dark:text-d-700-text">
-                        We've sent you a verification code on your email. Enter
-                        the code bellow:
+                        We've sent you a verification code on your email. To
+                        proceed with the registration enter the code bellow:
                     </div>
                     <PinInput
                         onPinStoring={handlePinStoring}
@@ -115,6 +123,7 @@ const VerificationSection = ({
                             variant="contained"
                             type="submit"
                             disableElevation
+                            disabled={waitServerRes}
                             size="large"
                             fullWidth
                             color="secondary"
@@ -127,9 +136,22 @@ const VerificationSection = ({
                                 e.preventDefault();
                                 handleVerify();
                             }}
+                            endIcon={
+                                waitServerRes ? (
+                                    <CircularProgress
+                                        color="secondary"
+                                        size={25}
+                                    />
+                                ) : null
+                            }
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
                         >
-                            <span className="flex-grow font-bold text-center text-gray-50">
-                                Verify
+                            <span className="font-bold text-gray-50 flex-grow text-center">
+                                {waitServerRes ? "Loading..." : "Verify"}
                             </span>
                         </Button>
                     </div>

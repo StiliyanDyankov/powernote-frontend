@@ -71,7 +71,9 @@ const EmailField = ({
                 value={storeEmailValue}
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === "Enter") {
+                        e.preventDefault();
                         onEnter();
+
                     } else return;
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import persistedThemeReducer from "./themeSlice";
 import persistedUserReducer from "./userSlice";
 import persistedRegisterReducer from "./registerSlice";
+import persistedForgotReducer from "./forgotSlice";
 import thunk from "redux-thunk";
 import { PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -18,6 +19,7 @@ export const store = configureStore({
         theme: persistedThemeReducer,
         user: persistedUserReducer,
         register: persistedRegisterReducer,
+        forgot: persistedForgotReducer,
     },
     middleware: [thunk],
 });

@@ -33,16 +33,11 @@ const RegisterPage = () => {
             {/* content-box */}
             <div className="flex flex-col min-w-0 gap-2">
                 <Stepper activeStep={storeRegisterStep} alternativeLabel>
-                    <Step key={steps[0]}>
-                        <StepLabel className="font-semibold">
-                            {steps[0]}
-                        </StepLabel>
-                    </Step>
-                    <Step key={steps[1]}>
-                        <StepLabel className="font-semibold">
-                            {steps[1]}
-                        </StepLabel>
-                    </Step>
+                    {steps.map((s) => (
+                        <Step key={s}>
+                            <StepLabel className="font-semibold">{s}</StepLabel>
+                        </Step>
+                    ))}
                 </Stepper>
                 {storeRegisterStep === 0 ? (
                     <RegisterSection onRegister={handleNext} />
