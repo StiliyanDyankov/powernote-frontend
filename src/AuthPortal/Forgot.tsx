@@ -5,10 +5,14 @@ import { RootState } from "../utils/store";
 import { useDispatch } from "react-redux";
 import { Step, StepLabel, Stepper, Typography } from "@mui/material";
 import VerificationSection from "./VerificationSection";
-import { goNextStep, goPrevStep, resetSteps } from "../utils/forgotSlice";
+import {
+    goNextStep,
+    goPrevStep,
+    resetSteps,
+} from "../utils/storeSlices/forgotSlice";
 import { CheckCircle } from "@mui/icons-material";
 import ForgotEmailSection from "./ForgotEmailSection";
-import ResetPasswordSection from './ResetPasswordSection';
+import ResetPasswordSection from "./ResetPasswordSection";
 
 const steps = ["Enter email", "Verify yourself", "Reset password"];
 

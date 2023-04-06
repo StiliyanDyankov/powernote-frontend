@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import {
-    useHref,
-    useLinkClickHandler,
-    useNavigate,
-} from "react-router-dom";
+import { useHref, useLinkClickHandler, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PasswordField from "./common/PasswordField";
 import AuthPageWrapper from "./common/AuthPageWrapper";
 import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { RootState } from "../utils/store";
-import { clearPassword } from "../utils/userSlice";
+import { clearPassword } from "../utils/storeSlices/userSlice";
 import EmailField from "./common/EmailField";
-import { useEmailErrors, usePasswordErrors, useTransitionRef } from "./../utils/hooks";
+import {
+    useEmailErrors,
+    usePasswordErrors,
+    useTransitionRef,
+} from "./../utils/hooks";
 
 const LoginPage: React.FC = () => {
     const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const ref = useTransitionRef()
+    const ref = useTransitionRef();
 
     const forgotURL = useHref("/forgottenPassword");
     const handleForgotLink = useLinkClickHandler("/forgottenPassword");

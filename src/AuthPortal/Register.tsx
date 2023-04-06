@@ -5,7 +5,11 @@ import { useDispatch } from "react-redux";
 import { Step, StepLabel, Stepper, Typography } from "@mui/material";
 import RegisterSection from "./RegisterSection";
 import VerificationSection from "./VerificationSection";
-import { goNextStep, goPrevStep, resetSteps } from "../utils/registerSlice";
+import {
+    goNextStep,
+    goPrevStep,
+    resetSteps,
+} from "../utils/storeSlices/registerSlice";
 import React, { useEffect, useRef, useState } from "react";
 import { CheckCircle } from "@mui/icons-material";
 

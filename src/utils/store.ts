@@ -1,13 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import persistedThemeReducer from "./themeSlice";
-import persistedUserReducer from "./userSlice";
-import persistedRegisterReducer from "./registerSlice";
-import persistedForgotReducer from "./forgotSlice";
+import persistedThemeReducer from "./storeSlices/themeSlice";
+import persistedUserReducer from "./storeSlices/userSlice";
+import persistedRegisterReducer from "./storeSlices/registerSlice";
+import persistedForgotReducer from "./storeSlices/forgotSlice";
 import thunk from "redux-thunk";
 import { PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
-
 
 export const persistConfig: PersistConfig<RootState> = {
     key: "root",

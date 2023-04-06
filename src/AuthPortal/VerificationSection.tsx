@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import PinInput from "./common/PinInput";
 import React, { useEffect, useState } from "react";
 import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
-import { setPin as setPinStore } from "../utils/registerSlice";
+import { setPin as setPinStore } from "../utils/storeSlices/registerSlice";
 import { useTransitionRef } from "./../utils/hooks";
 
 const VerificationSection = ({

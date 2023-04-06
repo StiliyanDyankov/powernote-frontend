@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
 import TextField from "@mui/material/TextField";
-import { inputEmail } from "../../utils/userSlice";
-import  Joi  from 'joi';
+import { inputEmail } from "../../utils/storeSlices/userSlice";
+import Joi from "joi";
 
 export interface EmailErrors {
     noEmailServer: boolean;
@@ -15,8 +15,10 @@ export const emailFormSchema = Joi.string().email({
     tlds: { allow: false },
 });
 
-
-export const checkEmailErrors = (email: string, errors: EmailErrors): EmailErrors => {
+export const checkEmailErrors = (
+    email: string,
+    errors: EmailErrors
+): EmailErrors => {
     let intErrors = { ...errors };
     Object.keys(intErrors).forEach(
         (k) => (intErrors[k as keyof EmailErrors] = false)
@@ -38,8 +40,6 @@ export const validateEmail = (errors: EmailErrors): boolean => {
     }
     return true;
 };
-
-
 
 const EmailField = ({
     errors: { noEmailServer, invalidEmailForm },
@@ -73,7 +73,6 @@ const EmailField = ({
                     if (e.key === "Enter") {
                         e.preventDefault();
                         onEnter();
-
                     } else return;
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

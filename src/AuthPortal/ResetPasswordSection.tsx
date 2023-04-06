@@ -7,7 +7,7 @@ import PasswordField, {
 import { Button, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
-import { clearPassword } from "../utils/userSlice";
+import { clearPassword } from "../utils/storeSlices/userSlice";
 import { usePasswordErrors, useTransitionRef } from "../utils/hooks";
 
 const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {

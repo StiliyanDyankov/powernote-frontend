@@ -13,7 +13,7 @@ import { useHref } from "react-router-dom";
 import { useLinkClickHandler } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
-import { clearPassword } from "../utils/userSlice";
+import { clearPassword } from "../utils/storeSlices/userSlice";
 import {
     useEmailErrors,
     usePasswordErrors,

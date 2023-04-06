@@ -10,7 +10,7 @@ import {
 import { VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../utils/store";
-import { inputPassword } from "../../utils/userSlice";
+import { inputPassword } from "../../utils/storeSlices/userSlice";
 import Joi from "joi";
 
 export interface PasswordErrors {

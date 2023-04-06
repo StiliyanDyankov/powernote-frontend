@@ -1,19 +1,19 @@
 import { Switch } from "@mui/material";
-import { useDispatch } from 'react-redux';
-import { changeTheme } from "../../utils/themeSlice";
-import { useSelector } from 'react-redux';
+import { useDispatch } from "react-redux";
+import { changeTheme } from "../../utils/storeSlices/themeSlice";
+import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
 
 const ModeSwitch = () => {
     const theme = useSelector((state: RootState) => state.theme.darkTheme);
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     return (
         <Switch
             color="secondary"
             checked={theme}
             onClick={() => {
-                dispatch(changeTheme())
+                dispatch(changeTheme());
             }}
             sx={{
                 position: "relative",
