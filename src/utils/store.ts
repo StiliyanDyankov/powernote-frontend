@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import persistedThemeReducer from "./storeSlices/themeSlice";
 import persistedUserReducer from "./storeSlices/userSlice";
 import persistedRegisterReducer from "./storeSlices/registerSlice";
@@ -7,6 +7,7 @@ import thunk from "redux-thunk";
 import { PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
+import { Api } from "./apiService";
 
 export const persistConfig: PersistConfig<RootState> = {
     key: "root",
@@ -19,8 +20,10 @@ export const store = configureStore({
         user: persistedUserReducer,
         register: persistedRegisterReducer,
         forgot: persistedForgotReducer,
+        [Api.reducerPath]: Api.reducer,
     },
-    middleware: [thunk],
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(thunk).concat(Api.middleware),
 });
 
 export const persistor = persistStore(store);

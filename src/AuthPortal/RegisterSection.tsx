@@ -8,7 +8,7 @@ import PasswordField, {
     PasswordFieldPlain,
     validatePassword,
 } from "./common/PasswordField";
-import { Button, Link as LinkMUI } from "@mui/material";
+import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { useHref } from "react-router-dom";
 import { useLinkClickHandler } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,16 +19,29 @@ import {
     usePasswordErrors,
     useTransitionRef,
 } from "../utils/hooks";
+import { usePostRegisterCredentialsQuery } from "../utils/apiService";
+import { Api } from "@mui/icons-material";
 
 const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
     const dispatch = useDispatch();
-
-    const transitionRef = useTransitionRef();
-
     const storeEmailValue = useSelector((state: RootState) => state.user.email);
     const storePasswordValue = useSelector(
         (state: RootState) => state.user.password
     );
+
+    // fetching methods
+    // const queryObj = usePostRegisterCredentialsQuery({
+    //     email: storeEmailValue,
+    //     password: storePasswordValue,
+    // }, {
+    //     skip: true,
+    // });
+    // const queryObj = Api.
+
+    // console.log(queryObj)
+    // queryObj.refetch(); 
+
+    const transitionRef = useTransitionRef();
 
     const [repeatPass, setRepeatPass] = useState<string>("");
 
@@ -78,6 +91,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             return;
         }
 
+        queryObj.refetch();
         onRegister();
         // do some fetching
     };
@@ -133,6 +147,14 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                             flexDirection: "row",
                             justifyContent: "space-between",
                         }}
+                        endIcon={
+                            queryObj.isFetching ? (
+                                <CircularProgress
+                                    color="secondary"
+                                    size={25}
+                                />
+                            ) : null
+                        }
                     >
                         <span className="flex-grow font-bold text-center text-gray-50">
                             Register

@@ -10,6 +10,7 @@ import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/storeSlices/userSlice";
 import { usePasswordErrors, useTransitionRef } from "../utils/hooks";
 
+
 const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const dispatch = useDispatch();
 
@@ -79,7 +80,7 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
         <div ref={transitionRef} className="content-box">
             {/* content-wrap */}
             <div className="content-wrap">
-                <h1 className="form-header">Register</h1>
+                <h1 className="form-header">Reset password</h1>
                 {/* form-wrap */}
                 <form className="flex flex-col items-stretch gap-4 ">
                     <div className="form-text">Enter your new password:</div>
@@ -89,7 +90,7 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
                         controlledShowPass={controlledShowPassword}
                         handleControlledShowPass={handleControlledShowPassword}
                     />
-                    <div className="form-text">Confirm password:</div>
+                    <div className="form-text">Confirm new password:</div>
                     <PasswordFieldPlain
                         onRepeatPassInput={handleRepeatPassInput}
                         noPassMatch={noPassMatch}
