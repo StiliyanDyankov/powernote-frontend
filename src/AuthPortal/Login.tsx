@@ -2,20 +2,25 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useHref, useLinkClickHandler, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import PasswordField from "./common/PasswordField";
+import PasswordField, { PasswordErrors } from "./common/PasswordField";
 import AuthPageWrapper from "./common/AuthPageWrapper";
-import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
+import { Alert, Button, CircularProgress, Link as LinkMUI } from "@mui/material";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/storeSlices/userSlice";
-import EmailField from "./common/EmailField";
+import EmailField, { EmailErrors } from "./common/EmailField";
 import {
     useEmailErrors,
     usePasswordErrors,
     useTransitionRef,
 } from "./../utils/hooks";
+import { usePostLoginMutation } from "../utils/apiService";
+import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
+import { setToken } from "../utils/storeSlices/tokenSlice";
 
 const LoginPage: React.FC = () => {
     const dispatch = useDispatch();
+
+    const [postLogin, { data, error, isLoading }] = usePostLoginMutation();
 
     const storeEmailValue = useSelector((state: RootState) => state.user.email);
     const storePasswordValue = useSelector(
@@ -34,6 +39,8 @@ const LoginPage: React.FC = () => {
 
     const appURL = useHref("/app");
 
+    const [serverError, setServerError] = useState<boolean>(false);
+
     const [emailErrors, setEmailErrors] = useEmailErrors();
 
     const [passwordErrors, setPasswordErrors] = usePasswordErrors();
@@ -43,23 +50,52 @@ const LoginPage: React.FC = () => {
     const handleLogin = async () => {
         setWaitServerRes(true);
 
-        // testing
-        setEmailErrors({
-            invalidEmailForm: true,
-            noEmailServer: true,
-            alreadyExists: true,
-        });
-        setPasswordErrors({
-            noLength: true,
-            noNumber: true,
-            noPasswordServer: true,
-            noSymbol: true,
-            noUppercase: true,
-            noLowercase: true,
+        const res = await postLogin({
+            email: storeEmailValue,
+            password: storePasswordValue,
         });
 
+        console.log(res);
+
+        if ((res as ResCredentialError).error) {
+            if ((res as ResCredentialError).error.status === 500) {
+                setServerError(true);
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                ).hasOwnProperty("alreadyExists")
+            ) {
+                setEmailErrors(
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                );
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                ).hasOwnProperty("noPasswordServer")
+            ) {
+                setPasswordErrors(
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                );
+                return;
+            }
+            return;
+        }
+
+        if ((res as unknown as ResCredentialSuccess).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
+        }
+
         // simulating fetching
-        await new Promise((r) => setTimeout(r, 3000));
+        // await new Promise((r) => setTimeout(r, 3000));
 
         navigate("/app");
     };
@@ -163,6 +199,12 @@ const LoginPage: React.FC = () => {
                                 Register
                             </LinkMUI>
                         </div>
+                        {serverError ? (
+                            <Alert severity="error">
+                                An unexpected error occured. —{" "}
+                                <strong>Please try again later!</strong>
+                            </Alert>
+                        ) : null}
                     </form>
                 </div>
             </div>

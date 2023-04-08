@@ -4,23 +4,28 @@ import PinInput from "./common/PinInput";
 import React, { useEffect, useState } from "react";
 import {
     Alert,
-    AlertTitle,
     Button,
     CircularProgress,
     Link as LinkMUI,
 } from "@mui/material";
 import { setPin as setPinStore } from "../utils/storeSlices/registerSlice";
 import { useTransitionRef } from "./../utils/hooks";
-import { usePostRegisterCodeMutation } from "../utils/apiService";
+import {
+    usePostForgotCodeMutation,
+    usePostRegisterCodeMutation,
+    usePostResendCodeMutation,
+} from "../utils/apiService";
 import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
 import { setToken } from "../utils/storeSlices/tokenSlice";
 
 const VerificationSection = ({
     onNext,
     onBack,
+    type,
 }: {
     onNext: () => void;
     onBack: () => void;
+    type: "register" | "forgot";
 }) => {
     const dispatch = useDispatch();
 
@@ -28,8 +33,18 @@ const VerificationSection = ({
 
     const ref = useTransitionRef();
 
-    const [postCode, { data, error, isLoading }] =
+    const [postRegisterCode, { data, error, isLoading }] =
         usePostRegisterCodeMutation();
+
+    const [
+        postForgotCode,
+        { data: forgotData, error: forgotResend, isLoading: forgotIsLoading },
+    ] = usePostForgotCodeMutation();
+
+    const [
+        postResend,
+        { data: resendData, error: resendError, isLoading: resendIsLoading },
+    ] = usePostResendCodeMutation();
 
     const [serverError, setServerError] = useState<boolean>(false);
 
@@ -54,17 +69,44 @@ const VerificationSection = ({
             return;
         }
 
-        const res = await postCode({ code: { verificationCode: pin }, token });
+        let res = {};
 
-        console.log(res);
-        if ((res as ResCredentialError).error) {
-            console.log("runs");
-            if ((res as ResCredentialError).error.status === 500) {
-                setServerError(true);
+        if (type === "register") {
+            res = await postRegisterCode({
+                code: { verificationCode: pin },
+                token,
+            });
+
+            if ((res as ResCredentialError).error) {
+                if ((res as ResCredentialError).error.status === 500) {
+                    setServerError(true);
+                    return;
+                }
+                setPinError(true);
                 return;
             }
-            setPinError(true);
-            return;
+        }
+
+        if (type === "forgot") {
+            res = await postForgotCode({
+                code: { verificationCode: pin },
+                token,
+            });
+            if ((res as ResCredentialError).error) {
+                if ((res as ResCredentialError).error.status === 500) {
+                    setServerError(true);
+                    return;
+                }
+                setPinError(true);
+                return;
+            }
+        }
+
+        if ((res as unknown as ResCredentialSuccess).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
         }
 
         onNext();
@@ -74,13 +116,15 @@ const VerificationSection = ({
         handleVerify();
     };
 
-    const handleResend = () => {
-        // if ((res as unknown as ResCredentialSuccess).data) {
-        //     const token = (
-        //         res as unknown as ResCredentialSuccess
-        //     ).data.token.substring(7);
-        //     dispatch(setToken(token));
-        // }
+    const handleResend = async () => {
+        const res = await postResend({ token });
+
+        if ((res as { data: any }).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
+        }
         // do some fetching
     };
 
@@ -143,7 +187,6 @@ const VerificationSection = ({
                                 ) => {
                                     e.preventDefault();
                                     onBack();
-                                    // console.log("runs");
                                 }}
                             >
                                 <span className="flex-grow font-bold text-center text-gray-50">
@@ -170,7 +213,7 @@ const VerificationSection = ({
                                 e.preventDefault();
                             }}
                             endIcon={
-                                isLoading ? (
+                                (isLoading || forgotIsLoading) ? (
                                     <CircularProgress
                                         color="secondary"
                                         size={25}
@@ -190,7 +233,6 @@ const VerificationSection = ({
                     </div>
                     {serverError ? (
                         <Alert severity="error">
-                            <AlertTitle>Error</AlertTitle>
                             An unexpected error occured. —{" "}
                             <strong>Please try again later!</strong>
                         </Alert>

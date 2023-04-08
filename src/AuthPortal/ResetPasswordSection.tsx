@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import PasswordField, {
     checkPasswordErrors,
+    PasswordErrors,
     PasswordFieldPlain,
     validatePassword,
 } from "./common/PasswordField";
-import { Button, CircularProgress } from "@mui/material";
+import { Alert, Button, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/storeSlices/userSlice";
 import { usePasswordErrors, useTransitionRef } from "../utils/hooks";
-
+import { usePostForgotChangePasswordMutation } from "../utils/apiService";
+import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
+import { setToken } from "../utils/storeSlices/tokenSlice";
 
 const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const dispatch = useDispatch();
@@ -19,6 +22,13 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const storePasswordValue = useSelector(
         (state: RootState) => state.user.password
     );
+    const token = useSelector((state: RootState) => state.token);
+
+
+    const [postCredentials, { data, error, isLoading }] =
+        usePostForgotChangePasswordMutation();
+
+    const [serverError, setServerError] = useState<boolean>(false);
 
     const [repeatPass, setRepeatPass] = useState<string>("");
 
@@ -56,14 +66,40 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
             return;
         }
 
-        setWaitServerRes(true);
+        const res = await postCredentials({
+            password: {newPassword: storePasswordValue,},
+            token
+        });
 
-        await new Promise((r) => setTimeout(r, 3000));
 
-        setWaitServerRes(false);
+        if ((res as ResCredentialError).error) {
+            if ((res as ResCredentialError).error.status === 500) {
+                setServerError(true);
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                ).hasOwnProperty("noPasswordServer")
+            ) {
+                setPasswordErrors(
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                );
+                return;
+            }
+            return;
+        }
+
+        if ((res as unknown as ResCredentialSuccess).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
+        }
 
         onSubmit();
-        // do some fetching
     };
 
     useEffect(() => {
@@ -113,21 +149,27 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
                             e.preventDefault();
                             handleSubmit();
                         }}
-                        endIcon={
-                            waitServerRes ? (
-                                <CircularProgress color="secondary" size={25} />
-                            ) : null
-                        }
                         sx={{
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "space-between",
                         }}
+                        endIcon={
+                            isLoading ? (
+                                <CircularProgress color="secondary" size={25} />
+                            ) : null
+                        }
                     >
                         <span className="font-bold text-gray-50 flex-grow text-center">
-                            {waitServerRes ? "Loading..." : "Reset Password"}
+                            {isLoading ? "Loading..." : "Reset Password"}
                         </span>
                     </Button>
+                    {serverError ? (
+                        <Alert severity="error">
+                            An unexpected error occured. —{" "}
+                            <strong>Please try again later!</strong>
+                        </Alert>
+                    ) : null}
                 </form>
             </div>
         </div>

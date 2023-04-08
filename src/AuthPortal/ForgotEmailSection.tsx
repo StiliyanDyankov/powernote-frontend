@@ -1,27 +1,25 @@
 import EmailField, {
-    checkEmailErrors,
-    validateEmail,
+    EmailErrors,
 } from "./common/EmailField";
-import { useState, useEffect, useRef } from "react";
-import PasswordField, {
-    checkPasswordErrors,
-    PasswordFieldPlain,
-    validatePassword,
-} from "./common/PasswordField";
-import { Button, Link as LinkMUI, CircularProgress } from "@mui/material";
-import { useHref } from "react-router-dom";
-import { useLinkClickHandler } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+import { Button, Link as LinkMUI, CircularProgress, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/storeSlices/userSlice";
 import {
     useEmailErrors,
-    usePasswordErrors,
     useTransitionRef,
 } from "../utils/hooks";
+import { usePostForgotEmailAuthMutation } from "../utils/apiService";
+import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
+import { setToken } from "../utils/storeSlices/tokenSlice";
 
 const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const dispatch = useDispatch();
+
+    const [postCredentials, { data, error, isLoading }] =
+        usePostForgotEmailAuthMutation();
 
     const transitionRef = useTransitionRef();
 
@@ -31,10 +29,39 @@ const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
 
     const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
 
-    const handleEmailSubmit = async () => {
-        setWaitServerRes(true);
+    const [serverError, setServerError] = useState<boolean>(false);
 
-        await new Promise((r) => setTimeout(r, 3000));
+    const handleEmailSubmit = async () => {
+
+        const res = await postCredentials({
+            email: storeEmailValue,
+        });
+
+
+        if ((res as ResCredentialError).error) {
+            if ((res as ResCredentialError).error.status === 500) {
+                setServerError(true);
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                ).hasOwnProperty("alreadyExists")
+            ) {
+                setEmailErrors(
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                );
+                return;
+            }
+            return;
+        }
+
+        if ((res as unknown as ResCredentialSuccess).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
+        }
 
         onSubmit();
     };
@@ -81,15 +108,21 @@ const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
                             justifyContent: "space-between",
                         }}
                         endIcon={
-                            waitServerRes ? (
+                            isLoading ? (
                                 <CircularProgress color="secondary" size={25} />
                             ) : null
                         }
                     >
                         <span className="font-bold text-gray-50 flex-grow text-center">
-                            {waitServerRes ? "Loading..." : "Send verification"}
+                            {isLoading ? "Loading..." : "Send verification"}
                         </span>
                     </Button>
+                    {serverError ? (
+                        <Alert severity="error">
+                            An unexpected error occured. —{" "}
+                            <strong>Please try again later!</strong>
+                        </Alert>
+                    ) : null}
                 </form>
             </div>
         </div>

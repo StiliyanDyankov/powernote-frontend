@@ -3,7 +3,7 @@ import EmailField, {
     checkEmailErrors,
     validateEmail,
 } from "./common/EmailField";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PasswordField, {
     checkPasswordErrors,
     PasswordErrors,
@@ -12,7 +12,6 @@ import PasswordField, {
 } from "./common/PasswordField";
 import {
     Alert,
-    AlertTitle,
     Button,
     CircularProgress,
     Link as LinkMUI,
@@ -28,8 +27,6 @@ import {
     useTransitionRef,
 } from "../utils/hooks";
 import { usePostRegisterCredentialsMutation } from "../utils/apiService";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { SerializedError } from "@reduxjs/toolkit";
 import { goNextStep } from "../utils/storeSlices/registerSlice";
 import { setToken } from "../utils/storeSlices/tokenSlice";
 
@@ -118,8 +115,6 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             password: storePasswordValue,
         });
 
-        console.log(res);
-
         if ((res as ResCredentialError).error) {
             if ((res as ResCredentialError).error.status === 500) {
                 setServerError(true);
@@ -128,7 +123,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             if (
                 (
                     (res as ResCredentialError).error.data.errors as EmailErrors
-                ).hasOwnProperty("alredyExsists")
+                ).hasOwnProperty("alreadyExists")
             ) {
                 setEmailErrors(
                     (res as ResCredentialError).error.data.errors as EmailErrors
@@ -139,7 +134,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                 (
                     (res as ResCredentialError).error.data
                         .errors as PasswordErrors
-                ).hasOwnProperty("")
+                ).hasOwnProperty("noPasswordServer")
             ) {
                 setPasswordErrors(
                     (res as ResCredentialError).error.data
@@ -147,6 +142,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                 );
                 return;
             }
+            return;
         }
 
         if ((res as unknown as ResCredentialSuccess).data) {
@@ -217,16 +213,9 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                         }
                     >
                         <span className="flex-grow font-bold text-center text-gray-50">
-                            Register
+                            {isLoading ? "Loading..." : "Register"}
                         </span>
                     </Button>
-                    {serverError ? (
-                        <Alert severity="error">
-                            <AlertTitle>Error</AlertTitle>
-                            An unexpected error occured. —{" "}
-                            <strong>Please try again later!</strong>
-                        </Alert>
-                    ) : null}
                     <div className="flex flex-row content-center justify-start gap-3">
                         <div className="form-text">
                             Already have an account?
@@ -249,6 +238,12 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                             Login
                         </LinkMUI>
                     </div>
+                    {serverError ? (
+                        <Alert severity="error">
+                            An unexpected error occured. —{" "}
+                            <strong>Please try again later!</strong>
+                        </Alert>
+                    ) : null}
                 </form>
             </div>
         </div>

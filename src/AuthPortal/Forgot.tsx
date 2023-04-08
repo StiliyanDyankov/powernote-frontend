@@ -53,6 +53,7 @@ const ForgotPage = () => {
                     <VerificationSection
                         onNext={handleNext}
                         onBack={handlePrev}
+                        type="forgot"
                     />
                 ) : (
                     ""
@@ -71,15 +72,19 @@ const ForgotPage = () => {
 export default ForgotPage;
 
 import { useTransitionRef } from "../utils/hooks";
+import { useNavigate } from "react-router-dom";
 
 const SuccessSection = () => {
     const dispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const ref = useTransitionRef();
 
     useEffect(() => {
         const wait = async () => {
             await new Promise((r) => setTimeout(r, 3000));
+            navigate("/app", { replace: true })
             dispatch(resetSteps());
         };
         wait();
@@ -91,12 +96,12 @@ const SuccessSection = () => {
                 <div className="content-wrap">
                     <div className="form-header">
                         <Typography variant="body1" color="green">
-                            <div className="flex flex-row items-center justify-center">
+                            <span className="flex flex-row items-center justify-center">
                                 <CheckCircle />
                                 <span className="pl-2 font-medium text-2xl">
                                     Success!
                                 </span>
-                            </div>
+                            </span>
                         </Typography>
                     </div>
                     <p className="form-text text-lg text-left">
