@@ -213,7 +213,7 @@ const VerificationSection = ({
                                 e.preventDefault();
                             }}
                             endIcon={
-                                (isLoading || forgotIsLoading) ? (
+                                isLoading || forgotIsLoading ? (
                                     <CircularProgress
                                         color="secondary"
                                         size={25}

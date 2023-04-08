@@ -1,16 +1,16 @@
-import EmailField, {
-    EmailErrors,
-} from "./common/EmailField";
+import EmailField, { EmailErrors } from "./common/EmailField";
 import { useState, useEffect } from "react";
 
-import { Button, Link as LinkMUI, CircularProgress, Alert } from "@mui/material";
+import {
+    Button,
+    Link as LinkMUI,
+    CircularProgress,
+    Alert,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../utils/store";
 import { clearPassword } from "../utils/storeSlices/userSlice";
-import {
-    useEmailErrors,
-    useTransitionRef,
-} from "../utils/hooks";
+import { useEmailErrors, useTransitionRef } from "../utils/hooks";
 import { usePostForgotEmailAuthMutation } from "../utils/apiService";
 import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
 import { setToken } from "../utils/storeSlices/tokenSlice";
@@ -32,11 +32,9 @@ const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const [serverError, setServerError] = useState<boolean>(false);
 
     const handleEmailSubmit = async () => {
-
         const res = await postCredentials({
             email: storeEmailValue,
         });
-
 
         if ((res as ResCredentialError).error) {
             if ((res as ResCredentialError).error.status === 500) {

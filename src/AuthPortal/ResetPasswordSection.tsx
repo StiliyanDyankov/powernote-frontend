@@ -24,7 +24,6 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
     );
     const token = useSelector((state: RootState) => state.token);
 
-
     const [postCredentials, { data, error, isLoading }] =
         usePostForgotChangePasswordMutation();
 
@@ -67,10 +66,9 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
         }
 
         const res = await postCredentials({
-            password: {newPassword: storePasswordValue,},
-            token
+            password: { newPassword: storePasswordValue },
+            token,
         });
-
 
         if ((res as ResCredentialError).error) {
             if ((res as ResCredentialError).error.status === 500) {

@@ -77,7 +77,7 @@ const SuccessSection = () => {
     useEffect(() => {
         const wait = async () => {
             await new Promise((r) => setTimeout(r, 3000));
-            navigate("/app", { replace: true })
+            navigate("/app", { replace: true });
             dispatch(resetSteps());
         };
         wait();
