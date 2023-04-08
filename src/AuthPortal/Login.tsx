@@ -47,6 +47,7 @@ const LoginPage: React.FC = () => {
         setEmailErrors({
             invalidEmailForm: true,
             noEmailServer: true,
+            alreadyExists: true,
         });
         setPasswordErrors({
             noLength: true,
