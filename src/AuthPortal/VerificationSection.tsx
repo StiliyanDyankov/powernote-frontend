@@ -1,9 +1,19 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../utils/store";
 import PinInput from "./common/PinInput";
 import React, { useEffect, useState } from "react";
-import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
+import {
+    Alert,
+    AlertTitle,
+    Button,
+    CircularProgress,
+    Link as LinkMUI,
+} from "@mui/material";
 import { setPin as setPinStore } from "../utils/storeSlices/registerSlice";
 import { useTransitionRef } from "./../utils/hooks";
+import { usePostRegisterCodeMutation } from "../utils/apiService";
+import { ResCredentialError, ResCredentialSuccess } from "./RegisterSection";
+import { setToken } from "../utils/storeSlices/tokenSlice";
 
 const VerificationSection = ({
     onNext,
@@ -14,7 +24,14 @@ const VerificationSection = ({
 }) => {
     const dispatch = useDispatch();
 
+    const token = useSelector((state: RootState) => state.token);
+
     const ref = useTransitionRef();
+
+    const [postCode, { data, error, isLoading }] =
+        usePostRegisterCodeMutation();
+
+    const [serverError, setServerError] = useState<boolean>(false);
 
     const [pin, setPin] = useState<string>("");
     const [pinError, setPinError] = useState<boolean>(false);
@@ -32,15 +49,25 @@ const VerificationSection = ({
     const handleVerify = async () => {
         if (pin.length === 5) {
             dispatch(setPinStore(pin));
+        } else {
+            setPinError(true);
+            return;
+        }
 
-            setWaitServerRes(true);
+        const res = await postCode({ code: { verificationCode: pin }, token });
 
-            await new Promise((r) => setTimeout(r, 3000));
+        console.log(res);
+        if ((res as ResCredentialError).error) {
+            console.log("runs");
+            if ((res as ResCredentialError).error.status === 500) {
+                setServerError(true);
+                return;
+            }
+            setPinError(true);
+            return;
+        }
 
-            setWaitServerRes(false);
-
-            onNext();
-        } else setPinError(true);
+        onNext();
     };
 
     const handleEnter = () => {
@@ -48,6 +75,12 @@ const VerificationSection = ({
     };
 
     const handleResend = () => {
+        // if ((res as unknown as ResCredentialSuccess).data) {
+        //     const token = (
+        //         res as unknown as ResCredentialSuccess
+        //     ).data.token.substring(7);
+        //     dispatch(setToken(token));
+        // }
         // do some fetching
     };
 
@@ -110,7 +143,7 @@ const VerificationSection = ({
                                 ) => {
                                     e.preventDefault();
                                     onBack();
-                                    console.log("runs");
+                                    // console.log("runs");
                                 }}
                             >
                                 <span className="flex-grow font-bold text-center text-gray-50">
@@ -133,11 +166,11 @@ const VerificationSection = ({
                                     MouseEvent
                                 >
                             ) => {
-                                e.preventDefault();
                                 handleVerify();
+                                e.preventDefault();
                             }}
                             endIcon={
-                                waitServerRes ? (
+                                isLoading ? (
                                     <CircularProgress
                                         color="secondary"
                                         size={25}
@@ -155,6 +188,13 @@ const VerificationSection = ({
                             </span>
                         </Button>
                     </div>
+                    {serverError ? (
+                        <Alert severity="error">
+                            <AlertTitle>Error</AlertTitle>
+                            An unexpected error occured. —{" "}
+                            <strong>Please try again later!</strong>
+                        </Alert>
+                    ) : null}
                 </form>
             </div>
         </div>

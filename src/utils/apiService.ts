@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+    ResCredentialError,
+    ResCredentialSuccess,
+} from "../AuthPortal/RegisterSection";
 
-const server = "http://localhost:3000/api/auth/";
+const server = "http://localhost:3000/api/";
 
 interface Credentials {
     email: string;
@@ -12,9 +16,12 @@ export const Api = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({ baseUrl: server }),
     endpoints: (builder) => ({
-        postRegisterCredentials: builder.query<Credentials, any>({
+        postRegisterCredentials: builder.mutation<
+            ResCredentialSuccess,
+            any
+        >({
             query: (credentials) => ({
-                url: "register",
+                url: "auth/register",
                 method: "POST",
                 body: credentials,
                 headers: {
@@ -22,9 +29,20 @@ export const Api = createApi({
                 },
             }),
         }),
+        postRegisterCode: builder.mutation({
+            query: ({code, token}) => ({
+                url: "verification/register",
+                method: "POST",
+                body: code,
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${token.token}`,
+                },
+            }),
+        })
     }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { usePostRegisterCredentialsQuery } = Api;
+export const { usePostRegisterCredentialsMutation, usePostRegisterCodeMutation } = Api;

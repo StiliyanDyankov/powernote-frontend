@@ -11,6 +11,7 @@ export const useEmailErrors = (): [
     setEmailErrors: React.Dispatch<React.SetStateAction<EmailErrors>>
 ] => {
     const [emailErrors, setEmailErrors] = useState<EmailErrors>({
+        alreadyExists: false,
         noEmailServer: false,
         invalidEmailForm: false,
     });

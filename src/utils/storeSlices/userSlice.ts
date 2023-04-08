@@ -42,6 +42,3 @@ export const { inputEmail, inputPassword, clearPassword, clearEmail } = userSlic
 
 const persistedReducer = persistReducer(persistConfig, userSlice.reducer);
 export default persistedReducer;
-
-
-// export default userSlice.reducer;

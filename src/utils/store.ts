@@ -3,6 +3,7 @@ import persistedThemeReducer from "./storeSlices/themeSlice";
 import persistedUserReducer from "./storeSlices/userSlice";
 import persistedRegisterReducer from "./storeSlices/registerSlice";
 import persistedForgotReducer from "./storeSlices/forgotSlice";
+import persistedTokenReducer from "./storeSlices/tokenSlice";
 import thunk from "redux-thunk";
 import { PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -20,6 +21,7 @@ export const store = configureStore({
         user: persistedUserReducer,
         register: persistedRegisterReducer,
         forgot: persistedForgotReducer,
+        token: persistedTokenReducer,
         [Api.reducerPath]: Api.reducer,
     },
     middleware: (getDefaultMiddleware) =>

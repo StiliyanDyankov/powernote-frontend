@@ -7,6 +7,7 @@ import { inputEmail } from "../../utils/storeSlices/userSlice";
 import Joi from "joi";
 
 export interface EmailErrors {
+    alreadyExists: boolean;
     noEmailServer: boolean;
     invalidEmailForm: boolean;
 }
@@ -42,7 +43,7 @@ export const validateEmail = (errors: EmailErrors): boolean => {
 };
 
 const EmailField = ({
-    errors: { noEmailServer, invalidEmailForm },
+    errors: { noEmailServer, invalidEmailForm, alreadyExists },
     onEnter,
 }: {
     errors: EmailErrors;
@@ -78,9 +79,16 @@ const EmailField = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     dispatch(inputEmail(e.target.value));
                 }}
-                error={noEmailServer || invalidEmailForm}
+                error={noEmailServer || invalidEmailForm || alreadyExists}
                 helperText={
                     <React.Fragment>
+                        {alreadyExists ? (
+                            <span>
+                                - Account with such email already exists <br />
+                            </span>
+                        ) : (
+                            ""
+                        )}
                         {noEmailServer ? (
                             <span>
                                 - No account with such email exists <br />

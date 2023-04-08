@@ -1,14 +1,22 @@
 import EmailField, {
+    EmailErrors,
     checkEmailErrors,
     validateEmail,
 } from "./common/EmailField";
 import { useState, useEffect, useRef } from "react";
 import PasswordField, {
     checkPasswordErrors,
+    PasswordErrors,
     PasswordFieldPlain,
     validatePassword,
 } from "./common/PasswordField";
-import { Button, CircularProgress, Link as LinkMUI } from "@mui/material";
+import {
+    Alert,
+    AlertTitle,
+    Button,
+    CircularProgress,
+    Link as LinkMUI,
+} from "@mui/material";
 import { useHref } from "react-router-dom";
 import { useLinkClickHandler } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,8 +27,28 @@ import {
     usePasswordErrors,
     useTransitionRef,
 } from "../utils/hooks";
-import { usePostRegisterCredentialsQuery } from "../utils/apiService";
-import { Api } from "@mui/icons-material";
+import { usePostRegisterCredentialsMutation } from "../utils/apiService";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { SerializedError } from "@reduxjs/toolkit";
+import { goNextStep } from "../utils/storeSlices/registerSlice";
+import { setToken } from "../utils/storeSlices/tokenSlice";
+
+export interface ResCredentialError {
+    error: {
+        data: {
+            errors: EmailErrors | PasswordErrors;
+            message: string;
+        };
+        status: number;
+    };
+}
+
+export interface ResCredentialSuccess {
+    data: {
+        message: string;
+        token: string;
+    };
+}
 
 const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
     const dispatch = useDispatch();
@@ -29,19 +57,12 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
         (state: RootState) => state.user.password
     );
 
-    // fetching methods
-    // const queryObj = usePostRegisterCredentialsQuery({
-    //     email: storeEmailValue,
-    //     password: storePasswordValue,
-    // }, {
-    //     skip: true,
-    // });
-    // const queryObj = Api.
-
-    // console.log(queryObj)
-    // queryObj.refetch(); 
+    const [postCredentials, { data, error, isLoading }] =
+        usePostRegisterCredentialsMutation();
 
     const transitionRef = useTransitionRef();
+
+    const [serverError, setServerError] = useState<boolean>(false);
 
     const [repeatPass, setRepeatPass] = useState<string>("");
 
@@ -66,7 +87,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
         setRepeatPass(e.target.value);
     };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const emailCheckedErrors = checkEmailErrors(
             storeEmailValue,
             emailErrors
@@ -91,9 +112,51 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             return;
         }
 
-        queryObj.refetch();
-        onRegister();
-        // do some fetching
+        // handle request
+        const res = await postCredentials({
+            email: storeEmailValue,
+            password: storePasswordValue,
+        });
+
+        console.log(res);
+
+        if ((res as ResCredentialError).error) {
+            if ((res as ResCredentialError).error.status === 500) {
+                setServerError(true);
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                ).hasOwnProperty("alredyExsists")
+            ) {
+                setEmailErrors(
+                    (res as ResCredentialError).error.data.errors as EmailErrors
+                );
+                return;
+            }
+            if (
+                (
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                ).hasOwnProperty("")
+            ) {
+                setPasswordErrors(
+                    (res as ResCredentialError).error.data
+                        .errors as PasswordErrors
+                );
+                return;
+            }
+        }
+
+        if ((res as unknown as ResCredentialSuccess).data) {
+            const token = (
+                res as unknown as ResCredentialSuccess
+            ).data.token.substring(7);
+            dispatch(setToken(token));
+        }
+
+        dispatch(goNextStep());
     };
 
     // clear repeat password error on input
@@ -148,11 +211,8 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                             justifyContent: "space-between",
                         }}
                         endIcon={
-                            queryObj.isFetching ? (
-                                <CircularProgress
-                                    color="secondary"
-                                    size={25}
-                                />
+                            isLoading ? (
+                                <CircularProgress color="secondary" size={25} />
                             ) : null
                         }
                     >
@@ -160,6 +220,13 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                             Register
                         </span>
                     </Button>
+                    {serverError ? (
+                        <Alert severity="error">
+                            <AlertTitle>Error</AlertTitle>
+                            An unexpected error occured. —{" "}
+                            <strong>Please try again later!</strong>
+                        </Alert>
+                    ) : null}
                     <div className="flex flex-row content-center justify-start gap-3">
                         <div className="form-text">
                             Already have an account?
