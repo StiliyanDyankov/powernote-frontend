@@ -17,6 +17,10 @@ import RegisterPage from "./AuthPortal/Register";
 
 const router = createBrowserRouter([
     {
+        path: "/",
+        element: <LoginPage />,
+    },
+    {
         path: "/login",
         element: <LoginPage />,
     },
