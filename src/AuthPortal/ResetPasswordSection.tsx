@@ -39,8 +39,6 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
     const [controlledShowPassword, setControlledShowPassword] =
         useState<boolean>(false);
 
-    const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
-
     const handleControlledShowPassword = () => {
         setControlledShowPassword(!controlledShowPassword);
     };
@@ -137,7 +135,7 @@ const ResetPasswordSection = ({ onSubmit }: { onSubmit: () => void }) => {
                         variant="contained"
                         type="submit"
                         disableElevation
-                        disabled={waitServerRes}
+                        disabled={isLoading}
                         size="large"
                         fullWidth
                         color="secondary"

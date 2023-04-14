@@ -152,7 +152,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
             dispatch(setToken(token));
         }
 
-        dispatch(goNextStep());
+        onRegister();
     };
 
     // clear repeat password error on input

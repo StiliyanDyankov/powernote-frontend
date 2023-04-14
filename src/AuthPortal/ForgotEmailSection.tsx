@@ -27,8 +27,6 @@ const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
 
     const [emailErrors, setEmailErrors] = useEmailErrors();
 
-    const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
-
     const [serverError, setServerError] = useState<boolean>(false);
 
     const handleEmailSubmit = async () => {
@@ -90,7 +88,7 @@ const ForgotEmailSection = ({ onSubmit }: { onSubmit: () => void }) => {
                         className="flex flex-row "
                         variant="contained"
                         disableElevation
-                        disabled={waitServerRes}
+                        disabled={isLoading}
                         size="large"
                         fullWidth
                         color="secondary"

@@ -48,10 +48,10 @@ const VerificationSection = ({
 
     const [serverError, setServerError] = useState<boolean>(false);
 
+    const [showResendAlert, setShowResendAlert] = useState<boolean>(false);
+
     const [pin, setPin] = useState<string>("");
     const [pinError, setPinError] = useState<boolean>(false);
-
-    const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
 
     const handlePinStoring = (values: string[]) => {
         const pin = values.filter((val) => val !== "");
@@ -124,8 +124,8 @@ const VerificationSection = ({
                 res as unknown as ResCredentialSuccess
             ).data.token.substring(7);
             dispatch(setToken(token));
+            setShowResendAlert(true);
         }
-        // do some fetching
     };
 
     useEffect(() => {
@@ -133,6 +133,14 @@ const VerificationSection = ({
             setPinError(false);
         }
     }, [pin]);
+
+    useEffect(() => {
+        if (showResendAlert) {
+            setTimeout(() => {
+                setShowResendAlert(false);
+            }, 3000);
+        }
+    }, [showResendAlert]);
 
     return (
         <div ref={ref} className="content-box">
@@ -171,6 +179,11 @@ const VerificationSection = ({
                             Resend code
                         </LinkMUI>
                     </div>
+                    {showResendAlert && (
+                        <Alert severity="success">
+                            Verification code has been sent to your email
+                        </Alert>
+                    )}
                     <div className="flex flex-row gap-2">
                         <div className="w-1/4">
                             <Button
@@ -199,7 +212,7 @@ const VerificationSection = ({
                             variant="contained"
                             type="submit"
                             disableElevation
-                            disabled={waitServerRes}
+                            disabled={isLoading || forgotIsLoading}
                             size="large"
                             fullWidth
                             color="secondary"
@@ -227,7 +240,7 @@ const VerificationSection = ({
                             }}
                         >
                             <span className="font-bold text-gray-50 flex-grow text-center">
-                                {waitServerRes ? "Loading..." : "Verify"}
+                                {isLoading || forgotIsLoading ? "Loading..." : "Verify"}
                             </span>
                         </Button>
                     </div>

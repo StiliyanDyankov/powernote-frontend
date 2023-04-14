@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ResCredentialSuccess } from "../AuthPortal/RegisterSection";
+import { ResCredentialError, ResCredentialSuccess } from "../AuthPortal/RegisterSection";
 
 const server = "http://localhost:3000/api/";
 
