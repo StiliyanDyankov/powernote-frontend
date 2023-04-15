@@ -45,10 +45,10 @@ const LoginPage: React.FC = () => {
 
     const [passwordErrors, setPasswordErrors] = usePasswordErrors();
 
-    const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
+    // const [waitServerRes, setWaitServerRes] = useState<boolean>(false);
 
     const handleLogin = async () => {
-        setWaitServerRes(true);
+        // setWaitServerRes(true);
 
         const res = await postLogin({
             email: storeEmailValue,
@@ -146,7 +146,7 @@ const LoginPage: React.FC = () => {
                             variant="contained"
                             type="submit"
                             disableElevation
-                            disabled={waitServerRes}
+                            disabled={isLoading}
                             size="large"
                             fullWidth
                             color="secondary"
@@ -166,7 +166,7 @@ const LoginPage: React.FC = () => {
                                 justifyContent: "space-between",
                             }}
                             endIcon={
-                                waitServerRes ? (
+                                isLoading ? (
                                     <CircularProgress
                                         color="secondary"
                                         size={25}
@@ -175,7 +175,7 @@ const LoginPage: React.FC = () => {
                             }
                         >
                             <span className="font-bold text-gray-50 flex-grow text-center">
-                                {waitServerRes ? "Loading..." : "Login"}
+                                {isLoading ? "Loading..." : "Login"}
                             </span>
                         </Button>
                         {/* </form> */}

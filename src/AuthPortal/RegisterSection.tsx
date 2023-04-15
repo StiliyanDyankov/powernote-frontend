@@ -191,6 +191,7 @@ const RegisterSection = ({ onRegister }: { onRegister: () => void }) => {
                     <Button
                         className="flex flex-row "
                         variant="contained"
+                        disabled={isLoading}
                         disableElevation
                         size="large"
                         fullWidth
