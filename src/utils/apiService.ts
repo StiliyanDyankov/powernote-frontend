@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ResCredentialError, ResCredentialSuccess } from "../AuthPortal/RegisterSection";
 
-const server = "powernote-backend-new.vercel.app/api/";
+const server = "https://powernote-backend-new.vercel.app/api/";
 
 interface Credentials {
     email: string;
