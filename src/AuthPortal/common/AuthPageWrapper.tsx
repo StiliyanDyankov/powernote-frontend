@@ -19,11 +19,16 @@ const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => {
                 </Link>
                 <ModeSwitch />
             </div>
-            <div className="w-96">
-
-            {children}
+            {/* <div
+                className="
+                w-full h-full
+                px-2
+                flex flex-col items-center justify-center
+            "
+            > */}
+                <div className="w-96 mx-3">{children}</div>
             </div>
-        </div>
+        // </div>
     );
 };
 
